@@ -93,3 +93,9 @@ A home apresenta 24 produtos em quatro formatos: seleção principal com oito ca
 A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização e cupons. Menus abrem por hover, clique, teclado ou toque; um clique fixa o painel e outro o fecha. Escape e clique fora também fecham o menu. As fotos de velas e das cestas nos banners usam enquadramento completo, com espaço ao redor.
 
 `CHROMIUM_PATH=/usr/bin/chromium npm run test:navigation` audita os destinos dos links da home, dos dois menus, do catálogo completo e de 23 páginas, verifica cliques reais nos banners e filtros por ocasião, a sequência hover seguida de clique e navegação em telas pequenas. A última execução verificou 236 URLs internas sem erros.
+
+## Banner de amizade
+
+O banner editorial depois da seleção principal usa o texto “Os melhores presentes começam com quem importa” e leva ao catálogo filtrado por Agradecimento. A foto fica ao lado do texto no desktop e acima dele no celular, sempre inteira, sem texto sobre os rostos.
+
+Para ativá-lo com a foto enviada, adicione `public/photos/banner-amigos.jpg` (também aceita `.webp` ou `.png`) e execute um novo build. Enquanto o arquivo não está no repositório, o banner permanece oculto, evitando imagens quebradas. O layout e o link foram validados com uma imagem temporária de teste; essa imagem não foi mantida nem publicada.

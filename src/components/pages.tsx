@@ -31,7 +31,7 @@ export function PageTitle({
     </div>
   );
 }
-function Home() {
+function Home({ banner }: { banner?: React.ReactNode }) {
   const { state } = useDemo();
   const biggestDiscount = Math.max(
     0,
@@ -154,6 +154,7 @@ function Home() {
         </div>
       </section>
       <HomeMerchandising section="selection" />
+      {banner}
       <HomeMerchandising section="home" />
       <HomeMerchandising section="budget" />
       <section className="personal-banner container">
@@ -1248,7 +1249,13 @@ function Info({ page }: { page: string }) {
     </div>
   );
 }
-function PageContent({ path }: { path: string }) {
+function PageContent({
+  path,
+  banner,
+}: {
+  path: string;
+  banner?: React.ReactNode;
+}) {
   const query = useSearchParams().toString();
   if (
     path.startsWith("/admin") ||
@@ -1256,7 +1263,7 @@ function PageContent({ path }: { path: string }) {
     path.startsWith("/oferta")
   )
     return <Operations key={path + query} path={path} />;
-  if (path === "/") return <Home />;
+  if (path === "/") return <Home banner={banner} />;
   if (path === "/catalogo") return <Catalog key={path} />;
   if (path === "/cupons") return <CouponSection />;
   if (path === "/presentear") return <Discovery full />;
@@ -1282,7 +1289,13 @@ function PageContent({ path }: { path: string }) {
 }
 
 const subscribeToHydration = () => () => {};
-export function DemoPage({ path }: { path: string }) {
+export function DemoPage({
+  path,
+  banner,
+}: {
+  path: string;
+  banner?: React.ReactNode;
+}) {
   const hydrated = useSyncExternalStore(
     subscribeToHydration,
     () => true,
@@ -1291,7 +1304,7 @@ export function DemoPage({ path }: { path: string }) {
   return (
     <>
       <span hidden data-demo-page={hydrated ? path : undefined} />
-      <PageContent path={path} />
+      <PageContent path={path} banner={banner} />
     </>
   );
 }
