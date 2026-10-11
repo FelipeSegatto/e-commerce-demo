@@ -4,7 +4,12 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon, useDemo } from "./demo-provider";
-import { categories, money } from "@/services/catalog";
+import {
+  categories,
+  money,
+  occasions,
+  productOccasions,
+} from "@/services/catalog";
 import type { Product } from "@/domain/types";
 import { Operations } from "./operations";
 
@@ -35,6 +40,11 @@ export function ProductCard({ product: p }: { product: Product }) {
         <Link href={"/produto/" + p.slug}>
           <img src={p.image} alt={p.name} loading="lazy" />
         </Link>
+        {p.originalPrice && p.originalPrice > p.price && (
+          <span className="discount-badge">
+            −{Math.round((1 - p.price / p.originalPrice) * 100)}%
+          </span>
+        )}
         {p.badge && <span className="product-badge">{p.badge}</span>}
         <button
           className={"favorite " + (favorite ? "selected" : "")}
@@ -64,17 +74,20 @@ export function ProductCard({ product: p }: { product: Product }) {
           className="card-add"
           disabled={!p.stock}
           onClick={() =>
-            p.options || p.customizable
+            p.options
               ? router.push("/produto/" + p.slug)
               : add({ productId: p.id, quantity: 1, option: "", message: "" })
           }
         >
           {!p.stock
             ? "Indisponível"
-            : p.options || p.customizable
-              ? "Escolher presente"
+            : p.options
+              ? "Escolher opções"
               : "Adicionar à sacola"}
-          <Icon name="arrow" size={16} />
+          <span className="card-add-icon">
+            <Icon name="bag" size={17} />
+            <Icon name="arrow" size={16} />
+          </span>
         </button>
       </div>
     </article>
@@ -140,6 +153,39 @@ function Home() {
           Cuidado em cada detalhe
         </span>
       </div>
+      <section
+        className="offers-banner container"
+        aria-label="Ofertas especiais"
+      >
+        <div>
+          <p className="eyebrow">BONS PRESENTES. MELHORES SURPRESAS.</p>
+          <h2>
+            Seu próximo gesto
+            <br />
+            <em>tem um preço especial.</em>
+          </h2>
+          <p>Uma seleção para encantar sem esperar uma grande ocasião.</p>
+          <Link className="button" href="/catalogo?ofertas=1">
+            Descobrir ofertas <Icon name="arrow" size={18} />
+          </Link>
+        </div>
+        <div className="offers-visual">
+          <img
+            src="/photos/gift-basket.jpg"
+            alt="Cesta de chocolates em oferta"
+          />
+          <span>
+            ATÉ <b>16%</b> OFF
+          </span>
+        </div>
+        <div className="offers-coupon">
+          <Icon name="gift" size={28} />
+          <span>PRIMEIRA COMPRA?</span>
+          <b>GIFT10</b>
+          <p>10% de desconto no checkout</p>
+          <small>Demo · Não cumulativo com ofertas de vendedor</small>
+        </div>
+      </section>
       <section className="section container">
         <div className="section-heading">
           <div>
@@ -230,6 +276,27 @@ function Catalog({
   const [search, setSearch] = useState(params.get("busca") || "");
   const [sort, setSort] = useState("featured");
   const [available, setAvailable] = useState(false);
+  const [occasion, setOccasion] = useState(params.get("ocasiao") || "Todas");
+  const [range, setRange] = useState(params.get("faixa") || "todos");
+  const [offers, setOffers] = useState(params.get("ofertas") === "1");
+  const [personalized, setPersonalized] = useState(false);
+  const ranges = [
+    { id: "todos", label: "Todos os preços", min: 0, max: Infinity },
+    { id: "ate75", label: "Até R$ 75", min: 0, max: 75 },
+    { id: "75a150", label: "De R$ 75 a R$ 150", min: 75, max: 150 },
+    { id: "acima150", label: "Acima de R$ 150", min: 150, max: Infinity },
+  ];
+  const priceRange = ranges.find((r) => r.id === range) || ranges[0];
+  const clearFilters = () => {
+    setCategory("Todos");
+    setSearch("");
+    setOccasion("Todas");
+    setRange("todos");
+    setOffers(false);
+    setPersonalized(false);
+    setAvailable(false);
+    setSort("featured");
+  };
   const products = state.products
     .filter(
       (p) =>
@@ -239,7 +306,13 @@ function Catalog({
         p.name
           .toLocaleLowerCase("pt-BR")
           .includes(search.toLocaleLowerCase("pt-BR")) &&
-        (!available || p.stock > 0),
+        (!available || p.stock > 0) &&
+        (occasion === "Todas" || productOccasions(p).includes(occasion)) &&
+        p.price >= priceRange.min &&
+        p.price <= priceRange.max &&
+        (!offers ||
+          (p.originalPrice !== undefined && p.originalPrice > p.price)) &&
+        (!personalized || p.customizable),
     )
     .sort((a, b) =>
       sort === "asc"
@@ -309,6 +382,50 @@ function Catalog({
               </span>
             </button>
           ))}
+          <div className="filter-group">
+            <label>
+              Por ocasião
+              <select
+                aria-label="Filtrar por ocasião"
+                value={occasion}
+                onChange={(e) => setOccasion(e.target.value)}
+              >
+                {["Todas", ...occasions].map((o) => (
+                  <option key={o}>{o}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              Faixa de preço
+              <select
+                aria-label="Filtrar por preço"
+                value={range}
+                onChange={(e) => setRange(e.target.value)}
+              >
+                {ranges.map((r) => (
+                  <option value={r.id} key={r.id}>
+                    {r.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+          <label className="check-label">
+            <input
+              type="checkbox"
+              checked={offers}
+              onChange={(e) => setOffers(e.target.checked)}
+            />{" "}
+            Somente ofertas
+          </label>
+          <label className="check-label">
+            <input
+              type="checkbox"
+              checked={personalized}
+              onChange={(e) => setPersonalized(e.target.checked)}
+            />{" "}
+            Com personalização
+          </label>
           <label className="check-label">
             <input
               type="checkbox"
@@ -336,6 +453,44 @@ function Catalog({
               <option value="desc">Maior preço</option>
             </select>
           </div>
+          <div className="active-filters" aria-label="Filtros ativos">
+            {category !== "Todos" && (
+              <button onClick={() => setCategory("Todos")}>{category} ×</button>
+            )}
+            {occasion !== "Todas" && (
+              <button onClick={() => setOccasion("Todas")}>{occasion} ×</button>
+            )}
+            {range !== "todos" && (
+              <button onClick={() => setRange("todos")}>
+                {priceRange.label} ×
+              </button>
+            )}
+            {offers && (
+              <button onClick={() => setOffers(false)}>Em oferta ×</button>
+            )}
+            {personalized && (
+              <button onClick={() => setPersonalized(false)}>
+                Personalizados ×
+              </button>
+            )}
+            {available && (
+              <button onClick={() => setAvailable(false)}>Disponíveis ×</button>
+            )}
+            {search && (
+              <button onClick={() => setSearch("")}>Busca: {search} ×</button>
+            )}
+            {(category !== "Todos" ||
+              occasion !== "Todas" ||
+              range !== "todos" ||
+              offers ||
+              personalized ||
+              available ||
+              search) && (
+              <button className="clear-filters" onClick={clearFilters}>
+                Limpar filtros
+              </button>
+            )}
+          </div>
           <p className="result-count">
             {products.length} presentes encontrados
           </p>
@@ -358,9 +513,9 @@ function Catalog({
                   ? "Toque no coração de um produto para guardá-lo aqui."
                   : "Tente outra busca ou categoria."}
               </p>
-              <Link className="button" href="/catalogo">
-                Explorar catálogo
-              </Link>
+              <button className="button" onClick={clearFilters}>
+                Limpar filtros
+              </button>
             </div>
           )}
         </div>

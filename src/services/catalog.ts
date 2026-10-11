@@ -120,3 +120,21 @@ export const money = (value: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
     value,
   );
+
+export const occasions = [
+  "Aniversário",
+  "Agradecimento",
+  "Amor & carinho",
+  "Casa nova",
+  "Boas-vindas",
+];
+export function productOccasions(product: Product): string[] {
+  const map: Record<Category, string[]> = {
+    Perfumes: ["Aniversário", "Agradecimento", "Amor & carinho"],
+    Chocolates: ["Aniversário", "Agradecimento", "Amor & carinho"],
+    Quadros: ["Casa nova", "Aniversário", "Agradecimento"],
+    Balões: ["Aniversário", "Boas-vindas"],
+    "Kits & cestas": ["Aniversário", "Amor & carinho", "Boas-vindas"],
+  };
+  return map[product.category] || [];
+}

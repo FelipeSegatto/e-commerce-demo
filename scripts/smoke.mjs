@@ -53,6 +53,77 @@ import assert from "node:assert/strict";
         : "/tmp/gift-home.png",
       fullPage: true,
     });
+    // Browsing refinements: keyboard/hover mega menu, linked filters and demo profiles.
+    const presents = page.getByRole("button", {
+      name: "Presentes",
+      exact: false,
+    });
+    await presents.hover();
+    await page.locator("#gift-mega-panel").waitFor();
+    await page.keyboard.press("Escape");
+    await page.locator("#gift-mega-panel").waitFor({ state: "detached" });
+    await presents.focus();
+    await presents.press("Enter");
+    await page.locator("#gift-mega-panel").waitFor();
+    await page
+      .locator("#gift-mega-panel")
+      .getByRole("link", { name: "Presentes até R$ 75", exact: true })
+      .click();
+    await page.getByLabel("Filtrar por preço").waitFor();
+    assert.equal(
+      await page.getByLabel("Filtrar por preço").inputValue(),
+      "ate75",
+    );
+    assert.equal(await page.locator(".product-card").count(), 1);
+    await page.getByLabel("Filtrar por ocasião").selectOption("Casa nova");
+    assert.equal(await page.locator(".product-card").count(), 0);
+    await page
+      .getByRole("button", { name: "Limpar filtros", exact: true })
+      .first()
+      .click();
+    assert.equal(await page.locator(".product-card").count(), 8);
+    await page
+      .getByRole("checkbox", { name: "Somente ofertas", exact: true })
+      .check();
+    assert.equal(await page.locator(".product-card").count(), 1);
+    await page
+      .getByRole("checkbox", { name: "Com personalização", exact: true })
+      .check();
+    assert.equal(await page.locator(".product-card").count(), 1);
+    const quickAdd = page.locator(".card-add").first();
+    await quickAdd.hover();
+    await page.waitForFunction(
+      () =>
+        getComputedStyle(document.querySelector(".card-add"))
+          .backgroundPositionX === "100%",
+    );
+    await quickAdd.click();
+    await page.getByRole("link", { name: "Sacola com 1 itens" }).waitFor();
+    await goto("/sacola");
+    await page.getByRole("button", { name: "Remover", exact: true }).click();
+    await page.getByRole("link", { name: "Admin", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "Visão geral", exact: true })
+      .waitFor();
+    await page.waitForURL("**/admin");
+    await page.getByRole("link", { name: "Vendedor", exact: true }).click();
+    await page
+      .getByRole("heading", { name: "Visão geral", exact: true })
+      .waitFor();
+    await page.waitForURL("**/vendedor");
+    await goto("/");
+    await page
+      .getByRole("link", { name: "Descobrir ofertas", exact: true })
+      .click();
+    await page
+      .getByRole("checkbox", { name: "Somente ofertas", exact: true })
+      .waitFor();
+    assert.equal(
+      await page
+        .getByRole("checkbox", { name: "Somente ofertas", exact: true })
+        .isChecked(),
+      true,
+    );
     await goto("/catalogo");
     await page
       .getByRole("navigation")
@@ -63,6 +134,7 @@ import assert from "node:assert/strict";
     assert.equal(await page.locator(".product-card").count(), 1);
     await goto("/produto/chocolates-afeto");
     await page
+      .locator(".detail-copy")
       .getByRole("button", { name: "Adicionar à sacola", exact: true })
       .click();
     await page.getByText("Escolha uma opção antes de adicionar.").waitFor();
@@ -71,6 +143,7 @@ import assert from "node:assert/strict";
       .getByLabel("Uma mensagem para o cartão")
       .fill("Um presente para celebrar você!");
     await page
+      .locator(".detail-copy")
       .getByRole("button", { name: "Adicionar à sacola", exact: true })
       .click();
     await page.getByRole("link", { name: "Ver minha sacola" }).click();
@@ -169,6 +242,18 @@ import assert from "node:assert/strict";
         false,
         "mobile overflow " + path,
       );
+      await page.locator("img").evaluateAll((images) =>
+        Promise.all(
+          images.map(async (image) => {
+            image.loading = "eager";
+            try {
+              await image.decode();
+            } catch {
+              /* Assert invalid images below. */
+            }
+          }),
+        ),
+      );
       const bad = await page
         .locator("img")
         .evaluateAll((images) =>
@@ -185,6 +270,33 @@ import assert from "node:assert/strict";
         : "/tmp/gift-mobile.png",
       fullPage: true,
     });
+    const touch = await browser.newPage({
+      viewport: { width: 320, height: 844 },
+      isMobile: true,
+      hasTouch: true,
+    });
+    await touch.goto(base);
+    await touch
+      .locator('[data-demo-state="ready"]')
+      .waitFor({ state: "attached" });
+    assert.equal(
+      await touch.evaluate(
+        () => document.documentElement.scrollWidth > innerWidth,
+      ),
+      false,
+      "320px layout",
+    );
+    await touch.getByRole("button", { name: "Presentes", exact: false }).tap();
+    await touch.locator("#gift-mega-panel").waitFor();
+    await touch.getByRole("button", { name: "Fechar mega menu" }).tap();
+    await touch.locator("#gift-mega-panel").waitFor({ state: "detached" });
+    await touch.locator(".profiles-menu summary").tap();
+    await touch
+      .locator(".profiles-menu")
+      .getByRole("link", { name: "Administrador", exact: true })
+      .tap();
+    await touch.waitForURL("**/admin");
+    await touch.close();
     const notFound = await page.goto(base + "/nao-existe");
     assert.equal(notFound.status(), 404);
     assert.deepEqual(errors, [], "browser runtime errors");

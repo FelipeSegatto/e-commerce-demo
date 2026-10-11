@@ -22,13 +22,13 @@ No ambiente cloud, use `NPM_CONFIG_CACHE=/workspace/.npm-cache` se o diretório 
 
 ## O que explorar
 
-- Loja: início, catálogo com busca/categorias/ordenação/disponibilidade, favoritos, detalhes, opções e cartão personalizado, sacola, cupom `GIFT10`, checkout em cinco etapas e confirmação.
+- Loja: início com banner de ofertas, mega menu por coleção/ocasião/preço, catálogo com busca/categorias/ocasiões/faixa de preço/ofertas/personalização/disponibilidade, ordenação, filtros removíveis, favoritos, detalhes, opções e cartão personalizado, sacola, cupom `GIFT10`, checkout em cinco etapas e confirmação. Botões e cards têm transições de hover/foco, respeitando a preferência de movimento reduzido.
 - Cliente: entrada/cadastro demonstrativos, pedidos com detalhes e status, nome do perfil e formulário de endereço.
 - Vendedor: catálogo, criação de proposta, desconto, aprovação e oferta local. Descontos de até 10% são aprovados automaticamente; acima disso passam pelo administrador.
 - Administrador: indicadores, produtos e cadastro, ajuste de estoque, pedidos e atualização de status, resumo financeiro, equipe e aprovação de descontos.
 - Institucional: sobre, contato simulado, entrega/trocas/privacidade.
 
-Use o seletor fixo **DEMO** para alternar os perfis e reiniciar os dados. Para testar o fluxo assistido: crie uma proposta no vendedor, aprove o desconto no administrador se necessário, abra a oferta e conclua o checkout. A proposta será convertida, o pedido aparecerá no painel e o estoque será reduzido.
+Use o seletor fixo **DEMO** para alternar os perfis e reiniciar os dados. Há também links diretos **Admin** e **Vendedor** na barra, no menu **Perfis da demo** do cabeçalho e no rodapé. Os painéis podem ser acessados diretamente em `/admin` e `/vendedor`, sem login real. Para testar o fluxo assistido: crie uma proposta no vendedor, aprove o desconto no administrador se necessário, abra a oferta e conclua o checkout. A proposta será convertida, o pedido aparecerá no painel e o estoque será reduzido.
 
 ## Limites da demonstração
 
@@ -64,7 +64,7 @@ npx playwright install chromium
 npm run test:smoke
 ```
 
-O teste usa um contexto isolado de navegador e exercita seleção obrigatória de opções, personalização, cupom, checkout, persistência, atualização de pedido, aprovação e conversão de proposta, estoque, favoritos, cadastro de produto, navegação e imagens em 21 rotas mobile, ausência de erros de runtime e 404. `DEMO_BASE_URL` permite testar outra porta; `SMOKE_SCREENSHOT_DIR` define onde salvar as capturas (diretório deve existir).
+O teste usa contextos isolados de navegador e exercita mega menu por hover/teclado/toque, filtros combinados e reset, banner de ofertas, animação e adição rápida à sacola, links de admin/vendedor, layout em 320px e seleção obrigatória de opções, personalização, cupom, checkout, persistência, atualização de pedido, aprovação e conversão de proposta, estoque, favoritos, cadastro de produto, navegação e imagens em 21 rotas mobile, ausência de erros de runtime e 404. `DEMO_BASE_URL` permite testar outra porta; `SMOKE_SCREENSHOT_DIR` define onde salvar as capturas (diretório deve existir).
 
 ## Ambiente cloud
 

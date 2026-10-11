@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { demoRepository, freshState } from "@/services/demo";
-import { categories } from "@/services/catalog";
+import { MegaMenu } from "./mega-menu";
 import type { CartItem, DemoState } from "@/domain/types";
 
 type Context = {
@@ -174,17 +174,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
           ["nova-proposta", "Nova proposta"],
           ["propostas", "Minhas propostas"],
         ];
-  const links = (
-    <>
-      <Link href="/catalogo">Todos os presentes</Link>
-      {categories.map((c) => (
-        <Link key={c} href={"/catalogo?categoria=" + encodeURIComponent(c)}>
-          {c}
-        </Link>
-      ))}
-      <Link href="/personalizados">Personalizados</Link>
-    </>
-  );
   return (
     <>
       {workspace ? (
@@ -275,6 +264,38 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </button>
               </form>
               <div className="header-actions">
+                <details className="profiles-menu">
+                  <summary>
+                    Perfis da demo <span aria-hidden="true">⌄</span>
+                  </summary>
+                  <div>
+                    <p>Explore a operação</p>
+                    <Link
+                      href="/admin"
+                      onClick={(e) =>
+                        e.currentTarget
+                          .closest("details")
+                          ?.removeAttribute("open")
+                      }
+                    >
+                      <Icon name="chart" size={17} />
+                      Administrador
+                      <Icon name="arrow" size={14} />
+                    </Link>
+                    <Link
+                      href="/vendedor"
+                      onClick={(e) =>
+                        e.currentTarget
+                          .closest("details")
+                          ?.removeAttribute("open")
+                      }
+                    >
+                      <Icon name="user" size={17} />
+                      Vendedor
+                      <Icon name="arrow" size={14} />
+                    </Link>
+                  </div>
+                </details>
                 <Link href="/favoritos" aria-label="Favoritos">
                   <Icon name="heart" />
                 </Link>
@@ -291,12 +312,20 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 </Link>
               </div>
             </div>
-            <nav
-              className={"category-nav " + (menu ? "open" : "")}
-              onClick={() => setMenu(false)}
-            >
-              {links}
-            </nav>
+            <MegaMenu />
+            {menu && (
+              <nav
+                className="mobile-drawer"
+                aria-label="Menu do celular"
+                onClick={() => setMenu(false)}
+              >
+                <Link href="/catalogo">Todos os presentes</Link>
+                <Link href="/catalogo?ofertas=1">Ofertas especiais</Link>
+                <Link href="/personalizados">Personalizados</Link>
+                <Link href="/admin">Administrador</Link>
+                <Link href="/vendedor">Vendedor</Link>
+              </nav>
+            )}
           </header>
           <main>{children}</main>
           <footer>
@@ -325,6 +354,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </div>
               <div>
                 <h4>Feito para demonstrar</h4>
+                <Link href="/admin">Painel do administrador</Link>
+                <Link href="/vendedor">Painel do vendedor</Link>
                 <p>
                   Marca e catálogo fictícios.
                   <br />
@@ -343,6 +374,18 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </>
       )}
       <div className="demo-toolbar">
+        <Link
+          className={workspace === "admin" ? "current-profile" : ""}
+          href="/admin"
+        >
+          Admin
+        </Link>
+        <Link
+          className={workspace === "vendedor" ? "current-profile" : ""}
+          href="/vendedor"
+        >
+          Vendedor
+        </Link>
         <span>
           <b>DEMO</b>
           <span className="toolbar-note"> Explore os perfis</span>
