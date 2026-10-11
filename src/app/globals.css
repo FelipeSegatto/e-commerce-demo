@@ -3888,6 +3888,9 @@ footer {
 .product-card:focus-within .product-image img.product-photo-contained {
   transform: scale(1.025);
 }
+.product-image img.product-photo-relaxed {
+  padding: 18px;
+}
 .offers-visual img {
   object-fit: contain;
   padding: 14px;
@@ -3995,6 +3998,9 @@ footer {
 @media (max-width: 600px) {
   .product-image img.product-photo-contained {
     padding: 16px;
+  }
+  .product-image img.product-photo-relaxed {
+    padding: 12px;
   }
   .personal-art {
     min-height: 290px;

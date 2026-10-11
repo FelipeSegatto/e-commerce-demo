@@ -5,6 +5,14 @@ import type { Product } from "@/domain/types";
 import { money } from "@/services/catalog";
 import { useDemo, Icon } from "./demo-provider";
 import { ProductImage } from "./product-image";
+const relaxedPhotoSlugs = new Set([
+  "libre-yves-saint-laurent",
+  "bleu-de-chanel",
+  "caixa-de-bombons-sortidos",
+  "chocolates-seashells",
+  "lindor-ao-leite",
+  "cesta-gourmet-jardim",
+]);
 export function ProductCard({ product: p }: { product: Product }) {
   const router = useRouter();
   const { state, update, add } = useDemo();
@@ -16,7 +24,11 @@ export function ProductCard({ product: p }: { product: Product }) {
           <ProductImage
             product={p}
             className={
-              p.subcategory === "Velas" ? "product-photo-contained" : undefined
+              p.subcategory === "Velas"
+                ? "product-photo-contained"
+                : relaxedPhotoSlugs.has(p.slug)
+                  ? "product-photo-contained product-photo-relaxed"
+                  : undefined
             }
           />
         </Link>

@@ -1,7 +1,7 @@
 import type { Category, Product } from "@/domain/types";
 import additions from "@/data/catalog-additions.json";
 import imageFiles from "@/data/catalog-images.json";
-export const CATALOG_REVISION = 3;
+export const CATALOG_REVISION = 4;
 export const categories: Category[] = [
   "Perfumes",
   "Chocolates",
