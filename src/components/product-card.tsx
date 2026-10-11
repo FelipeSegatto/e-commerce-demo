@@ -13,7 +13,12 @@ export function ProductCard({ product: p }: { product: Product }) {
     <article className="product-card">
       <div className="product-image">
         <Link href={"/produto/" + p.slug}>
-          <ProductImage product={p} />
+          <ProductImage
+            product={p}
+            className={
+              p.subcategory === "Velas" ? "product-photo-contained" : undefined
+            }
+          />
         </Link>
         {p.originalPrice && p.originalPrice > p.price && (
           <span className="discount-badge">

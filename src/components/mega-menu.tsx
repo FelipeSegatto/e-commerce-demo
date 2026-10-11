@@ -1,14 +1,27 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { coupons } from "@/services/coupons";
 import { categories, occasions } from "@/services/catalog";
 import { Icon } from "./demo-provider";
 
 export function MegaMenu() {
   const root = useRef<HTMLDivElement>(null);
+  const pinned = useRef(false);
+  const path = usePathname();
   const [open, setOpen] = useState<string | null>(null);
-  const close = () => setOpen(null);
+  const close = () => {
+    pinned.current = false;
+    setOpen(null);
+  };
+  const toggle = (section: string) => {
+    if (open === section && pinned.current) close();
+    else {
+      pinned.current = true;
+      setOpen(section);
+    }
+  };
   useEffect(() => {
     if (!open) return;
     const handler = (event: KeyboardEvent) => {
@@ -18,12 +31,12 @@ export function MegaMenu() {
             ".mega-trigger[aria-expanded=true]",
           )
           ?.focus();
-        setOpen(null);
+        close();
       }
     };
     const outside = (event: PointerEvent) => {
       if (event.target instanceof Node && !root.current?.contains(event.target))
-        setOpen(null);
+        close();
     };
     window.addEventListener("keydown", handler);
     window.addEventListener("pointerdown", outside);
@@ -37,67 +50,85 @@ export function MegaMenu() {
     <div
       ref={root}
       className="mega-navigation"
-      onMouseLeave={close}
+      onMouseLeave={() => {
+        if (!pinned.current) close();
+      }}
       onBlur={(e) => {
         if (!e.currentTarget.contains(e.relatedTarget)) close();
       }}
     >
-      <nav className="category-nav" aria-label="Navegação da loja">
-        <button
-          className="mega-trigger"
-          aria-expanded={open === "presentes"}
-          aria-controls="gift-mega-panel"
-          onMouseEnter={() => {
-            if (window.matchMedia("(hover:hover)").matches)
-              setOpen("presentes");
-          }}
-          onClick={() => setOpen(open === "presentes" ? null : "presentes")}
-        >
-          Presentes <span aria-hidden="true">⌄</span>
-        </button>
-        {categories
-          .filter((c) =>
-            [
-              "Perfumes",
-              "Chocolates",
-              "Casa & decoração",
-              "Flores & buquês",
-            ].includes(c),
-          )
-          .map((c) => (
-            <Link
-              key={c}
-              href={"/catalogo?categoria=" + encodeURIComponent(c)}
-              onMouseEnter={close}
-              onClick={close}
-            >
-              {c}
-            </Link>
-          ))}
-        <button
-          className="mega-trigger"
-          aria-expanded={open === "ocasioes"}
-          aria-controls="gift-mega-panel"
-          onMouseEnter={() => {
-            if (window.matchMedia("(hover:hover)").matches) setOpen("ocasioes");
-          }}
-          onClick={() => setOpen(open === "ocasioes" ? null : "ocasioes")}
-        >
-          Por ocasião <span aria-hidden="true">⌄</span>
-        </button>
-        <Link
-          className="nav-offers"
-          href="/catalogo?ofertas=1"
-          onMouseEnter={close}
-        >
-          Ofertas <span className="offer-dot" />
-        </Link>
-        <Link href="/personalizados" onMouseEnter={close}>
-          Personalizados
-        </Link>
-        <Link href="/cupons" onMouseEnter={close}>
-          Cupons
-        </Link>
+      <nav className="category-nav refined-nav" aria-label="Navegação da loja">
+        <div className="nav-collections">
+          <button
+            className="mega-trigger"
+            aria-expanded={open === "presentes"}
+            aria-controls="gift-mega-panel"
+            onMouseEnter={() => {
+              if (!pinned.current && window.matchMedia("(hover:hover)").matches)
+                setOpen("presentes");
+            }}
+            onClick={() => toggle("presentes")}
+          >
+            Presentes <NavChevron />
+          </button>
+          {categories
+            .filter((c) =>
+              [
+                "Perfumes",
+                "Chocolates",
+                "Casa & decoração",
+                "Flores & buquês",
+              ].includes(c),
+            )
+            .map((c) => (
+              <Link
+                key={c}
+                href={"/catalogo?categoria=" + encodeURIComponent(c)}
+                onMouseEnter={close}
+                onClick={close}
+              >
+                {c}
+              </Link>
+            ))}
+          <button
+            className="mega-trigger"
+            aria-expanded={open === "ocasioes"}
+            aria-controls="gift-mega-panel"
+            onMouseEnter={() => {
+              if (!pinned.current && window.matchMedia("(hover:hover)").matches)
+                setOpen("ocasioes");
+            }}
+            onClick={() => toggle("ocasioes")}
+          >
+            Por ocasião <NavChevron />
+          </button>
+        </div>
+        <div className="nav-discover">
+          <Link
+            className="nav-offers"
+            href="/catalogo?ofertas=1"
+            onMouseEnter={close}
+            onClick={close}
+          >
+            Ofertas <span className="offer-dot" />
+          </Link>
+          <Link
+            href="/personalizados"
+            aria-current={path === "/personalizados" ? "page" : undefined}
+            onMouseEnter={close}
+            onClick={close}
+          >
+            Personalizados
+          </Link>
+          <Link
+            href="/cupons"
+            aria-current={path === "/cupons" ? "page" : undefined}
+            onMouseEnter={close}
+            onClick={close}
+          >
+            Cupons
+          </Link>
+        </div>
       </nav>
       {open && (
         <div id="gift-mega-panel" className="mega-panel">
@@ -197,5 +228,22 @@ export function MegaMenu() {
         </div>
       )}
     </div>
+  );
+}
+
+function NavChevron() {
+  return (
+    <svg
+      className="nav-chevron"
+      width="12"
+      height="12"
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.25"
+      aria-hidden="true"
+    >
+      <path d="m4 6 4 4 4-4" />
+    </svg>
   );
 }

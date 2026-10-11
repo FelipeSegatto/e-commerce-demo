@@ -87,3 +87,9 @@ Novos catálogos migram o estado local preservando estoque existente, pedidos, f
 A home apresenta 24 produtos em quatro formatos: seleção principal com oito cards, composição editorial para casa com quatro peças, uma prateleira de seis presentes até R$ 75 e outra com seis itens de autocuidado. Fotos de todos os banners são distintas. As prateleiras permitem navegar por rolagem, teclado, toque e botões direcionais. Os links abrem detalhes dos produtos ou o catálogo com os filtros da coleção.
 
 `CHROMIUM_PATH=/usr/bin/chromium npm run test:home` verifica a curadoria, imagens distintas, prateleiras, troca de modos, fechamento do seletor e layouts em 320, 390 e 768 pixels.
+
+## Navegação e enquadramento
+
+A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização e cupons. Menus abrem por hover, clique, teclado ou toque; um clique fixa o painel e outro o fecha. Escape e clique fora também fecham o menu. As fotos de velas e das cestas nos banners usam enquadramento completo, com espaço ao redor.
+
+`CHROMIUM_PATH=/usr/bin/chromium npm run test:navigation` audita os destinos dos links da home, dos dois menus, do catálogo completo e de 23 páginas, verifica cliques reais nos banners e filtros por ocasião, a sequência hover seguida de clique e navegação em telas pequenas. A última execução verificou 236 URLs internas sem erros.
