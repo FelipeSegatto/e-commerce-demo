@@ -36,6 +36,7 @@ export type CartItem = {
   quantity: number;
   option: string;
   message: string;
+  unitPrice?: number;
 };
 export type Order = {
   id: string;
@@ -49,11 +50,17 @@ export type Order = {
   coupon?: string;
   discount?: number;
 };
+export type ProposalItem = {
+  productId: string;
+  quantity: number;
+};
 export type Proposal = {
   id: string;
   customer: string;
-  productId: string;
-  quantity: number;
+  items?: ProposalItem[];
+  /** Single-product proposals saved by earlier demo versions. */
+  productId?: string;
+  quantity?: number;
   discount: number;
   status: "Aguardando aprovação" | "Aprovada" | "Convertida";
 };

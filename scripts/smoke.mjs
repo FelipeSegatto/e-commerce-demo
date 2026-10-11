@@ -184,6 +184,18 @@ import assert from "node:assert/strict";
     await page.getByText("Em preparação", { exact: true }).waitFor();
     await goto("/vendedor/nova-proposta?produto=p3");
     await page.getByLabel("Cliente fictício").fill("Cliente Oferta");
+    await page
+      .getByRole("button", { name: "+ Adicionar produto", exact: true })
+      .click();
+    await page.getByLabel("Produto 2", { exact: true }).selectOption("p1");
+    await page.getByLabel("Quantidade do produto 2", { exact: true }).fill("2");
+    await page
+      .getByRole("button", { name: "+ Adicionar produto", exact: true })
+      .click();
+    await page
+      .getByRole("button", { name: "Remover produto 3", exact: true })
+      .click();
+    assert.equal(await page.locator(".proposal-item").count(), 2);
     await page.getByLabel("Desconto (%)").fill("15");
     await page
       .getByRole("button", { name: "Criar proposta", exact: true })
@@ -193,12 +205,24 @@ import assert from "node:assert/strict";
     await page.getByRole("button", { name: "Aprovar", exact: true }).click();
     await page.getByText("Aprovada", { exact: true }).waitFor();
     await page.getByRole("link", { name: "Abrir oferta" }).click();
+    await page.locator(".proposal-summary-item").first().waitFor();
+    assert.equal(await page.locator(".proposal-summary-item").count(), 2);
     await page.getByRole("button", { name: "Usar esta oferta" }).click();
     await page.getByText("Desconto da oferta", { exact: true }).waitFor();
     await checkout("Cliente Oferta");
+    const offerOrder = await page.evaluate(
+      () => JSON.parse(localStorage.getItem("gift-store-demo-v1")).orders[0],
+    );
+    assert.equal(offerOrder.items.length, 2);
+    assert.equal(
+      offerOrder.items.find((item) => item.productId === "p1").quantity,
+      2,
+    );
+    assert.equal(offerOrder.items.find((item) => item.productId === "p1").unitPrice, 159.9);
     await goto("/vendedor/propostas");
     await page.getByText("Convertida", { exact: true }).waitFor();
     await goto("/admin/estoque");
+    assert.equal(await page.getByLabel("Estoque de Kit Pequenas Alegrias").inputValue(), "10");
     assert.equal(
       await page
         .getByLabel("Estoque de Caixa de Chocolates Afeto")

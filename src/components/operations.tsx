@@ -3,10 +3,16 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Finance } from "./finance";
 import { ProductImage } from "./product-image";
 import { useDemo, Icon } from "./demo-provider";
 import { categories, money } from "@/services/catalog";
-import type { Order, Product } from "@/domain/types";
+import {
+  proposalItems,
+  proposalSubtotal,
+  proposalStockValid,
+} from "@/services/proposals";
+import type { ProposalItem, Order, Product } from "@/domain/types";
 
 const labels: Record<string, string> = {
   produtos: "Produtos",
@@ -29,8 +35,13 @@ export function Operations({ path }: { path: string }) {
   const page = path.split("/")[2] || "dashboard";
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
-  const [productId, setProductId] = useState(params.get("produto") || "p1");
-  const [qty, setQty] = useState(1);
+  const [items, setItems] = useState<ProposalItem[]>([
+    { productId: params.get("produto") || "p1", quantity: 1 },
+  ]);
+  const editItem = (index: number, change: Partial<ProposalItem>) =>
+    setItems((current) =>
+      current.map((item, i) => (i === index ? { ...item, ...change } : item)),
+    );
   const [discount, setDiscount] = useState(0);
   const [customer, setCustomer] = useState("");
   const [newProduct, setNewProduct] = useState({
@@ -43,12 +54,11 @@ export function Operations({ path }: { path: string }) {
   const [member, setMember] = useState("");
   const [members, setMembers] = useState(["Admin Demo", "Vendedor Demo"]);
   const [period, setPeriod] = useState("30");
-  const revenue = state.orders.reduce((sum, o) => sum + o.total, 0);
   const pending = state.proposals.filter(
     (p) => p.status === "Aguardando aprovação",
   );
   const low = state.products.filter((p) => p.stock <= 5);
-  const selected = state.products.find((p) => p.id === productId);
+  const subtotal = proposalSubtotal(items, state.products);
   const filteredProducts = state.products.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -121,8 +131,13 @@ export function Operations({ path }: { path: string }) {
   );
   if (path.startsWith("/oferta")) {
     const proposal = state.proposals.find((p) => p.id === page);
-    const product = state.products.find((p) => p.id === proposal?.productId);
-    if (!proposal || !product)
+    const lines = proposal ? proposalItems(proposal) : [];
+    const product = state.products.find((p) => p.id === lines[0]?.productId);
+    if (
+      !proposal ||
+      !product ||
+      lines.some((item) => !state.products.some((p) => p.id === item.productId))
+    )
       return (
         <div className="empty">
           <h1>Oferta não encontrada neste navegador.</h1>
@@ -142,15 +157,28 @@ export function Operations({ path }: { path: string }) {
         <div className="detail-grid">
           <img className="offer-image" src={product.image} alt={product.name} />
           <div className="panel">
-            <h2>{product.name}</h2>
-            <p>{product.description}</p>
-            <p>
-              {proposal.quantity} unidade(s) · {proposal.discount}% de desconto
-            </p>
+            <h2>
+              {lines.length > 1 ? "Sua seleção de presentes" : product.name}
+            </h2>
+            {lines.map((item) => {
+              const gift = state.products.find((p) => p.id === item.productId)!;
+              return (
+                <div className="proposal-summary-item" key={item.productId}>
+                  <ProductImage product={gift} />
+                  <div>
+                    <b>{gift.name}</b>
+                    <p>
+                      {item.quantity} unidade(s) ·{" "}
+                      {money(gift.price * item.quantity)}
+                    </p>
+                  </div>
+                </div>
+              );
+            })}
+            <p>{proposal.discount}% de desconto sobre a seleção</p>
             <div className="detail-price">
               {money(
-                product.price *
-                  proposal.quantity *
+                proposalSubtotal(lines, state.products) *
                   (1 - proposal.discount / 100),
               )}
             </div>
@@ -160,23 +188,26 @@ export function Operations({ path }: { path: string }) {
             </p>
             <button
               className="button"
-              disabled={proposal.status !== "Aprovada" || !product.stock}
+              disabled={
+                proposal.status !== "Aprovada" ||
+                !proposalStockValid(lines, state.products)
+              }
               onClick={() => {
-                if (proposal.quantity > product.stock) {
+                if (!proposalStockValid(lines, state.products)) {
                   notify("Estoque insuficiente para esta oferta.");
                   return;
                 }
                 update((s) => ({
                   ...s,
-                  cart: [
-                    {
-                      key: proposal.id,
-                      productId: product.id,
-                      quantity: proposal.quantity,
-                      option: product.options?.[0] || "",
-                      message: "",
-                    },
-                  ],
+                  cart: lines.map((item, index) => ({
+                    key: proposal.id + "-" + index,
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    option:
+                      state.products.find((p) => p.id === item.productId)
+                        ?.options?.[0] || "",
+                    message: "",
+                  })),
                 }));
                 router.push("/checkout?oferta=" + proposal.id);
               }}
@@ -237,9 +268,7 @@ export function Operations({ path }: { path: string }) {
                     ? state.proposals.reduce(
                         (sum, p) =>
                           sum +
-                          (state.products.find((i) => i.id === p.productId)
-                            ?.price || 0) *
-                            p.quantity *
+                          proposalSubtotal(proposalItems(p), state.products) *
                             (1 - p.discount / 100),
                         0,
                       )
@@ -520,7 +549,7 @@ export function Operations({ path }: { path: string }) {
           className="panel operation-form"
           onSubmit={(e) => {
             e.preventDefault();
-            if (!selected || qty > selected.stock) {
+            if (!proposalStockValid(items, state.products)) {
               notify("Quantidade maior que o estoque disponível.");
               return;
             }
@@ -531,8 +560,7 @@ export function Operations({ path }: { path: string }) {
                 {
                   id,
                   customer,
-                  productId,
-                  quantity: qty,
+                  items: items.map((item) => ({ ...item })),
                   discount,
                   status: discount > 10 ? "Aguardando aprovação" : "Aprovada",
                 },
@@ -557,33 +585,102 @@ export function Operations({ path }: { path: string }) {
               placeholder="Cliente Exemplo"
             />
           </label>
-          <label>
-            Produto
-            <select
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
+          <div className="proposal-items">
+            {items.map((item, index) => {
+              const selected = state.products.find(
+                (p) => p.id === item.productId,
+              );
+              return (
+                <fieldset className="proposal-item" key={index}>
+                  <legend>Produto {index + 1}</legend>
+                  <label>
+                    Produto
+                    <select
+                      aria-label={"Produto " + (index + 1)}
+                      value={item.productId}
+                      onChange={(e) =>
+                        editItem(index, {
+                          productId: e.target.value,
+                          quantity: 1,
+                        })
+                      }
+                    >
+                      {state.products
+                        .filter(
+                          (p) =>
+                            p.stock > 0 &&
+                            !items.some(
+                              (line, i) =>
+                                i !== index && line.productId === p.id,
+                            ),
+                        )
+                        .map((p) => (
+                          <option key={p.id} value={p.id}>
+                            {p.name} · {money(p.price)}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  <div className="proposal-item-actions">
+                    <label>
+                      Quantidade
+                      <input
+                        aria-label={"Quantidade do produto " + (index + 1)}
+                        required
+                        type="number"
+                        min="1"
+                        max={selected?.stock || 1}
+                        value={item.quantity}
+                        onChange={(e) =>
+                          editItem(index, { quantity: Number(e.target.value) })
+                        }
+                      />
+                    </label>
+                    <b>{money((selected?.price || 0) * item.quantity)}</b>
+                    <button
+                      type="button"
+                      className="text-link"
+                      disabled={items.length === 1}
+                      aria-label={"Remover produto " + (index + 1)}
+                      onClick={() =>
+                        setItems((current) =>
+                          current.filter((_, i) => i !== index),
+                        )
+                      }
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </fieldset>
+              );
+            })}
+            <button
+              type="button"
+              className="button outline"
+              disabled={
+                !state.products.some(
+                  (p) =>
+                    p.stock > 0 &&
+                    !items.some((item) => item.productId === p.id),
+                )
+              }
+              onClick={() => {
+                const next = state.products.find(
+                  (p) =>
+                    p.stock > 0 &&
+                    !items.some((item) => item.productId === p.id),
+                );
+                if (next)
+                  setItems((current) => [
+                    ...current,
+                    { productId: next.id, quantity: 1 },
+                  ]);
+              }}
             >
-              {state.products
-                .filter((p) => p.stock > 0)
-                .map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name} · {money(p.price)}
-                  </option>
-                ))}
-            </select>
-          </label>
+              + Adicionar produto
+            </button>
+          </div>
           <div className="form-grid">
-            <label>
-              Quantidade
-              <input
-                required
-                type="number"
-                min="1"
-                max={selected?.stock || 1}
-                value={qty}
-                onChange={(e) => setQty(Number(e.target.value))}
-              />
-            </label>
             <label>
               Desconto (%)
               <input
@@ -604,7 +701,7 @@ export function Operations({ path }: { path: string }) {
           </div>
           <div className="total">
             <span>Total da oferta</span>
-            <b>{money((selected?.price || 0) * qty * (1 - discount / 100))}</b>
+            <b>{money(subtotal * (1 - discount / 100))}</b>
           </div>
           <button className="button">
             Criar proposta <Icon name="arrow" size={16} />
@@ -630,7 +727,12 @@ export function Operations({ path }: { path: string }) {
                     <td>
                       <b>{p.id}</b>
                       <small>
-                        {state.products.find((i) => i.id === p.productId)?.name}
+                        {proposalItems(p)
+                          .map(
+                            (item) =>
+                              `${item.quantity}× ${state.products.find((i) => i.id === item.productId)?.name || "Produto indisponível"}`,
+                          )
+                          .join(" · ")}
                       </small>
                     </td>
                     <td>{p.customer}</td>
@@ -799,46 +901,7 @@ export function Operations({ path }: { path: string }) {
         </section>
       )}
       {page === "financeiro" && (
-        <>
-          <div className="metrics">
-            <div>
-              <p>Total de pedidos</p>
-              <h2>{money(revenue)}</h2>
-              <small>Valor demonstrativo</small>
-            </div>
-            <div>
-              <p>Recebimento real</p>
-              <h2>{money(0)}</h2>
-              <small>Gateway não integrado</small>
-            </div>
-            <div>
-              <p>Ticket médio</p>
-              <h2>
-                {money(state.orders.length ? revenue / state.orders.length : 0)}
-              </h2>
-              <small>Pedidos simulados</small>
-            </div>
-          </div>
-          <section className="panel">
-            <h2>Resumo por forma de pagamento</h2>
-            {["Pix", "Cartão de crédito"].map((p) => (
-              <div className="list-row" key={p}>
-                <span>{p}</span>
-                <b>
-                  {money(
-                    state.orders
-                      .filter((o) => o.payment === p)
-                      .reduce((sum, o) => sum + o.total, 0),
-                  )}
-                </b>
-              </div>
-            ))}
-            <div className="notice">
-              Nenhum valor foi cobrado ou recebido. Os indicadores refletem
-              somente as simulações deste navegador.
-            </div>
-          </section>
-        </>
+        <Finance orders={state.orders} products={state.products} now={now} />
       )}
       {page === "equipe" && (
         <section className="panel">

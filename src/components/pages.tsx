@@ -12,6 +12,7 @@ import { CouponSection } from "./coupons";
 import { HomeMerchandising } from "./home-merchandising";
 import { Discovery } from "./discovery";
 import { evaluateCoupon } from "@/services/coupons";
+import { proposalMatchesCart } from "@/services/proposals";
 import { Operations } from "./operations";
 
 export function PageTitle({
@@ -566,11 +567,7 @@ function Checkout() {
   const proposal = state.proposals.find(
     (p) => p.id === params.get("oferta") && p.status === "Aprovada",
   );
-  const validProposal =
-    proposal &&
-    state.cart.length === 1 &&
-    state.cart[0].productId === proposal.productId &&
-    state.cart[0].quantity === proposal.quantity;
+  const validProposal = proposal && proposalMatchesCart(proposal, state.cart);
   const couponResult = evaluateCoupon(
     params.get("cupom") || "",
     state.cart,
@@ -677,7 +674,12 @@ function Checkout() {
                 {
                   id,
                   createdAt: new Date().toISOString(),
-                  items: s.cart,
+                  items: s.cart.map((item) => ({
+                    ...item,
+                    unitPrice:
+                      s.products.find((p) => p.id === item.productId)?.price ||
+                      0,
+                  })),
                   total,
                   delivery,
                   payment,
