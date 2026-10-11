@@ -94,6 +94,21 @@ try {
     "Casa nova",
   );
   await go("/");
+  await page
+    .getByRole("button", { name: "Abrir coleções de presentes" })
+    .hover();
+  await page
+    .getByRole("link", { name: "Com a sua mensagem", exact: true })
+    .click();
+  await page.waitForURL(
+    (url) => url.pathname === "/catalogo" && url.searchParams.get("personalizados") === "1",
+  );
+  assert.equal(
+    await page.getByLabel("Com personalização", { exact: true }).isChecked(),
+    true,
+  );
+  assert.ok(await page.locator(".product-card").count() > 0);
+  await go("/");
   for (const selector of [
     ".offers-banner .button",
     ".personal-banner .button",

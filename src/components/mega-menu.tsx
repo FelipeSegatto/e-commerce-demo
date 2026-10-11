@@ -182,7 +182,7 @@ export function MegaMenu() {
                 <a href="/catalogo?faixa=ate75">Presentes até R$ 75</a>
                 <a href="/catalogo?faixa=75a150">De R$ 75 a R$ 150</a>
                 <a href="/catalogo?ofertas=1">Seleção em oferta</a>
-                <a href="/personalizados">Com a sua mensagem</a>
+                <a href="/catalogo?personalizados=1">Com a sua mensagem</a>
               </section>
             </div>
             <a className="mega-feature" href="/catalogo?ofertas=1">
