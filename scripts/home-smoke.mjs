@@ -22,11 +22,11 @@ try {
   assert.equal(await page.locator(".editorial-product").count(), 3);
   const banners = await page
     .locator(
-      ".hero-art img,.offers-visual img,.personal-art img,.editorial-feature img",
+      ".hero-art img,.offers-visual img,.personal-art img,.editorial-feature img,.friendship-photo img",
     )
     .evaluateAll((images) => images.map((i) => i.src));
-  assert.equal(banners.length, 4);
-  assert.equal(new Set(banners).size, 4);
+  assert.equal(banners.length, 5);
+  assert.equal(new Set(banners).size, 5);
   assert.equal(
     await page.locator('a[href="/admin"],a[href="/vendedor"]').count(),
     0,

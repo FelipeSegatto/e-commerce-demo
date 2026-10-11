@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { DemoPage } from "@/components/pages";
 export default function Page() {
   const filename = [
+    "friends-fun.jpg",
     "banner-amigos.jpg",
     "banner-amigos.webp",
     "banner-amigos.png",

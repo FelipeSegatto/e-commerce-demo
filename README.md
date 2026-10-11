@@ -98,4 +98,4 @@ A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização 
 
 O banner editorial depois da seleção principal usa o texto “Os melhores presentes começam com quem importa” e leva ao catálogo filtrado por Agradecimento. A foto fica ao lado do texto no desktop e acima dele no celular, sempre inteira, sem texto sobre os rostos.
 
-Para ativá-lo com a foto enviada, adicione `public/photos/banner-amigos.jpg` (também aceita `.webp` ou `.png`) e execute um novo build. Enquanto o arquivo não está no repositório, o banner permanece oculto, evitando imagens quebradas. O layout e o link foram validados com uma imagem temporária de teste; essa imagem não foi mantida nem publicada.
+O banner utiliza a foto original `public/photos/friends-fun.jpg`, enviada pelo usuário. Também aceita `banner-amigos.jpg`, `.webp` ou `.png` como alternativa. A versão com a foto original foi verificada no desktop e no celular, incluindo o link para a seleção por Agradecimento.
