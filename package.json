@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test:smoke": "node scripts/smoke.mjs"
+    "test:smoke": "node scripts/smoke.mjs",
+    "test:domain": "tsx --test tests/domain.test.ts",
+    "test:discovery": "node scripts/discovery-smoke.mjs"
   },
   "dependencies": {
     "next": "16.4.0",
@@ -24,6 +26,7 @@
     "eslint-config-next": "16.4.0",
     "playwright": "^1.64.0",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }

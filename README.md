@@ -1,6 +1,6 @@
 # Gift Store
 
-Demo navegável de uma loja de presentes em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca, textos e catálogo fictícios. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
+Demo navegável de uma loja de presentes em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca Gift Store fictícia; nomes de produtos e fotografias fornecidos pelo usuário, com preços e estoques demonstrativos. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
 
 ## Executar
 
@@ -50,6 +50,7 @@ Para integrar backend, substitua a persistência local por um provider que consu
 ```bash
 npm run lint
 npm run typecheck
+npm run test:domain
 npm run build
 ```
 
@@ -58,14 +59,25 @@ Com a aplicação em execução, rode o smoke test de navegador:
 ```bash
 # Cloud: Chromium já disponível
 CHROMIUM_PATH=/usr/bin/chromium npm run test:smoke
+CHROMIUM_PATH=/usr/bin/chromium npm run test:discovery
 
 # Em outra máquina, instale o navegador uma vez
 npx playwright install chromium
 npm run test:smoke
 ```
 
-O teste usa contextos isolados de navegador e exercita mega menu por hover/teclado/toque, filtros combinados e reset, banner de ofertas, animação e adição rápida à sacola, links de admin/vendedor, layout em 320px e seleção obrigatória de opções, personalização, cupom, checkout, persistência, atualização de pedido, aprovação e conversão de proposta, estoque, favoritos, cadastro de produto, navegação e imagens em 21 rotas mobile, ausência de erros de runtime e 404. `DEMO_BASE_URL` permite testar outra porta; `SMOKE_SCREENSHOT_DIR` define onde salvar as capturas (diretório deve existir).
+O teste usa contextos isolados de navegador e exercita mega menu por hover/teclado/toque, filtros combinados e reset, banner de ofertas, animação e adição rápida à sacola, links de admin/vendedor, layout em 320px e seleção obrigatória de opções, personalização, cupom, checkout, persistência, atualização de pedido, aprovação e conversão de proposta, estoque, favoritos, cadastro de produto, navegação e imagens em 23 rotas mobile, ausência de erros de runtime e 404. `DEMO_BASE_URL` permite testar outra porta; `SMOKE_SCREENSHOT_DIR` define onde salvar as capturas (diretório deve existir).
 
 ## Ambiente cloud
 
 Use o checkout existente `/workspace/e-commerce-demo`. Não crie worktrees: cada tarefa cloud já é isolada. Dependências e build são reproduzíveis com `npm ci`; processos devem ser iniciados novamente em novas tarefas. As instruções de instalação e inicialização são salvas separadamente na configuração do ambiente; publicação é feita na interface do produto.
+
+## Catálogo e descoberta
+
+93 produtos em 8 categorias, com fotos locais JPG e WebP. Os arquivos duplicados enviados permanecem preservados, sem criar produtos repetidos. A seleção inclui perfumes, chocolates, banho e cuidados, aromas, decoração, flores, festas e cestas. Valores e estoques são demonstrativos.
+
+A busca aceita palavras sem acentos e sugere produtos por nome, marca e ocasião. Os filtros combinam preço, categoria, tipo, marca, ocasião, cor, material, disponibilidade, ofertas e personalização. URL preserva filtros, ordenação e paginação. `/presentear` recomenda seleções por ocasião e orçamento; `/cupons` reúne seis campanhas por tema.
+
+Cupons aplicam desconto somente nos produtos elegíveis, respeitam valor mínimo e limite de desconto, excluem o frete e não acumulam com propostas de vendedor. GIFT10 vale apenas para o primeiro pedido neste navegador. Checkout registra código e desconto no pedido.
+
+Novos catálogos migram o estado local preservando estoque existente, pedidos, favoritos, sacola e produtos cadastrados. Fotos e variantes estão vinculadas em `src/data/catalog-images.json`; `src/data/image-import-manifest.json` documenta cada vínculo.

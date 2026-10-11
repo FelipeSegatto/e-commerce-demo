@@ -1,7 +1,8 @@
 import type { DemoState } from "@/domain/types";
-import { initialProducts } from "./catalog";
+import { initialProducts, CATALOG_REVISION } from "./catalog";
 const KEY = "gift-store-demo-v1";
 export const freshState = (): DemoState => ({
+  catalogRevision: CATALOG_REVISION,
   cart: [],
   favorites: [],
   orders: [],
@@ -21,7 +22,7 @@ export const demoRepository = {
         Array.isArray(data.favorites) &&
         Array.isArray(data.proposals)
       )
-        return data;
+        return migrateCatalog(data as DemoState);
     } catch {
       /* Corrupt or inaccessible local storage falls back to demo defaults. */
     }
@@ -40,3 +41,20 @@ export const demoRepository = {
     return state;
   },
 };
+
+export function migrateCatalog(state: DemoState): DemoState {
+  if (state.catalogRevision === CATALOG_REVISION) return state;
+  const stored = new Map(state.products.map((p) => [p.id, p]));
+  const defaults = new Set(initialProducts.map((p) => p.id));
+  return {
+    ...state,
+    catalogRevision: CATALOG_REVISION,
+    products: [
+      ...initialProducts.map((p) => ({
+        ...p,
+        stock: stored.get(p.id)?.stock ?? p.stock,
+      })),
+      ...state.products.filter((p) => !defaults.has(p.id)),
+    ],
+  };
+}

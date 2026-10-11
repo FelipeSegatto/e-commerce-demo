@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { coupons } from "@/services/coupons";
 import { categories, occasions } from "@/services/catalog";
 import { Icon } from "./demo-provider";
 
@@ -54,16 +55,25 @@ export function MegaMenu() {
         >
           Presentes <span aria-hidden="true">⌄</span>
         </button>
-        {categories.map((c) => (
-          <Link
-            key={c}
-            href={"/catalogo?categoria=" + encodeURIComponent(c)}
-            onMouseEnter={close}
-            onClick={close}
-          >
-            {c}
-          </Link>
-        ))}
+        {categories
+          .filter((c) =>
+            [
+              "Perfumes",
+              "Chocolates",
+              "Casa & decoração",
+              "Flores & buquês",
+            ].includes(c),
+          )
+          .map((c) => (
+            <Link
+              key={c}
+              href={"/catalogo?categoria=" + encodeURIComponent(c)}
+              onMouseEnter={close}
+              onClick={close}
+            >
+              {c}
+            </Link>
+          ))}
         <button
           className="mega-trigger"
           aria-expanded={open === "ocasioes"}
@@ -84,6 +94,9 @@ export function MegaMenu() {
         </Link>
         <Link href="/personalizados" onMouseEnter={close}>
           Personalizados
+        </Link>
+        <Link href="/cupons" onMouseEnter={close}>
+          Cupons
         </Link>
       </nav>
       {open && (
@@ -156,6 +169,21 @@ export function MegaMenu() {
                   Explorar ofertas <Icon name="arrow" size={15} />
                 </span>
               </div>
+            </Link>
+          </div>
+          <div className="mega-themes">
+            <span>Explore por tema</span>
+            {coupons.slice(1).map((c) => (
+              <Link
+                href={"/catalogo?tema=" + c.theme}
+                key={c.theme}
+                onClick={close}
+              >
+                {c.title}
+              </Link>
+            ))}
+            <Link className="text-link" href="/presentear" onClick={close}>
+              Precisa de uma ideia? →
             </Link>
           </div>
           <div className="mega-bottom">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { ProductImage } from "./product-image";
 import { useDemo, Icon } from "./demo-provider";
 import { categories, money } from "@/services/catalog";
 import type { Order, Product } from "@/domain/types";
@@ -70,7 +71,7 @@ export function Operations({ path }: { path: string }) {
             <tr key={p.id}>
               <td>
                 <div className="table-product">
-                  <img src={p.image} alt="" />
+                  <ProductImage product={p} />
                   <span>
                     <b>{p.name}</b>
                     <small>{p.id.toUpperCase()}</small>
@@ -392,7 +393,7 @@ export function Operations({ path }: { path: string }) {
               <div className="seller-grid">
                 {filteredProducts.map((p) => (
                   <div className="seller-card" key={p.id}>
-                    <img src={p.image} alt={p.name} />
+                    <ProductImage product={p} />
                     <h3>{p.name}</h3>
                     <p>
                       {money(p.price)} · {p.stock} un.

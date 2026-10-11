@@ -3,6 +3,8 @@ import { DemoPage } from "@/components/pages";
 import { notFound } from "next/navigation";
 const routes = [
   "catalogo",
+  "cupons",
+  "presentear",
   "produto",
   "sacola",
   "checkout",

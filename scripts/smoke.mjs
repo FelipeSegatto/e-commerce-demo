@@ -69,27 +69,47 @@ import assert from "node:assert/strict";
       .locator("#gift-mega-panel")
       .getByRole("link", { name: "Presentes até R$ 75", exact: true })
       .click();
-    await page.getByLabel("Filtrar por preço").waitFor();
-    assert.equal(
-      await page.getByLabel("Filtrar por preço").inputValue(),
-      "ate75",
+    await page.getByLabel("Preço máximo").waitFor();
+    assert.equal(await page.getByLabel("Preço máximo").inputValue(), "75");
+    const products = await page.evaluate(
+      () => JSON.parse(localStorage.getItem("gift-store-demo-v1")).products,
     );
-    assert.equal(await page.locator(".product-card").count(), 1);
-    await page.getByLabel("Filtrar por ocasião").selectOption("Casa nova");
-    assert.equal(await page.locator(".product-card").count(), 0);
+    async function results(count) {
+      await page
+        .getByText(`${count} presentes encontrados`, { exact: true })
+        .waitFor();
+      assert.equal(
+        await page.locator(".product-card").count(),
+        Math.min(count, 12),
+      );
+    }
+    await results(products.filter((p) => p.price <= 75).length);
+    await page
+      .getByLabel("Por ocasião", { exact: true })
+      .selectOption("Casa nova");
+    await results(
+      products.filter(
+        (p) =>
+          p.price <= 75 &&
+          ["Casa & decoração", "Casa & aromas"].includes(p.category),
+      ).length,
+    );
     await page
       .getByRole("button", { name: "Limpar filtros", exact: true })
       .first()
       .click();
-    assert.equal(await page.locator(".product-card").count(), 8);
+    await results(93);
     await page
       .getByRole("checkbox", { name: "Somente ofertas", exact: true })
-      .check();
-    assert.equal(await page.locator(".product-card").count(), 1);
+      .click();
+    await results(products.filter((p) => p.originalPrice > p.price).length);
     await page
       .getByRole("checkbox", { name: "Com personalização", exact: true })
-      .check();
-    assert.equal(await page.locator(".product-card").count(), 1);
+      .click();
+    await results(
+      products.filter((p) => p.originalPrice > p.price && p.customizable)
+        .length,
+    );
     const quickAdd = page.locator(".card-add").first();
     await quickAdd.hover();
     await page.waitForFunction(
@@ -130,8 +150,7 @@ import assert from "node:assert/strict";
       .first()
       .getByRole("link", { name: "Chocolates", exact: true })
       .click();
-    await page.getByText("1 presentes encontrados").waitFor();
-    assert.equal(await page.locator(".product-card").count(), 1);
+    await results(products.filter((p) => p.category === "Chocolates").length);
     await goto("/produto/chocolates-afeto");
     await page
       .locator(".detail-copy")
@@ -212,6 +231,8 @@ import assert from "node:assert/strict";
     const routes = [
       "/",
       "/catalogo",
+      "/cupons",
+      "/presentear",
       "/personalizados",
       "/sobre",
       "/contato",
@@ -301,7 +322,7 @@ import assert from "node:assert/strict";
     assert.equal(notFound.status(), 404);
     assert.deepEqual(errors, [], "browser runtime errors");
     console.log(
-      "PASS: catálogo, opções obrigatórias, personalização, cupom, checkout, persistência, pedidos, propostas/aprovação/conversão, estoque, favoritos, cadastro de produto, 21 rotas mobile, imagens e 404.",
+      "PASS: catálogo, opções obrigatórias, personalização, cupom, checkout, persistência, pedidos, propostas/aprovação/conversão, estoque, favoritos, cadastro de produto, 23 rotas mobile, imagens e 404.",
     );
   } finally {
     await browser.close();

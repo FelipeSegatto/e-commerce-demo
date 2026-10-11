@@ -1,5 +1,12 @@
 export type Category =
-  "Perfumes" | "Chocolates" | "Quadros" | "Balões" | "Kits & cestas";
+  | "Perfumes"
+  | "Chocolates"
+  | "Banho & cuidados"
+  | "Casa & aromas"
+  | "Casa & decoração"
+  | "Flores & buquês"
+  | "Festas & decoração"
+  | "Kits & cestas";
 export type Product = {
   id: string;
   slug: string;
@@ -13,6 +20,15 @@ export type Product = {
   badge?: string;
   options?: string[];
   customizable?: boolean;
+  subcategory?: string;
+  brand?: string;
+  color?: string;
+  material?: string;
+  occasions?: string[];
+  imagePending?: boolean;
+  expectedImage?: string;
+  variantImages?: Record<string, string>;
+  pendingVariantImages?: Record<string, string>;
 };
 export type CartItem = {
   key: string;
@@ -30,6 +46,8 @@ export type Order = {
   payment: string;
   status: "Recebido" | "Em preparação" | "Enviado" | "Entregue";
   customer: string;
+  coupon?: string;
+  discount?: number;
 };
 export type Proposal = {
   id: string;
@@ -40,6 +58,7 @@ export type Proposal = {
   status: "Aguardando aprovação" | "Aprovada" | "Convertida";
 };
 export type DemoState = {
+  catalogRevision?: number;
   cart: CartItem[];
   favorites: string[];
   orders: Order[];

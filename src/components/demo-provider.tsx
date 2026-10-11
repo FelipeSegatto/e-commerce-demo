@@ -3,6 +3,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { demoRepository, freshState } from "@/services/demo";
+import { SmartSearch } from "./smart-search";
 import { MegaMenu } from "./mega-menu";
 import type { CartItem, DemoState } from "@/domain/types";
 
@@ -150,7 +151,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
   const path = usePathname();
   const router = useRouter();
   const [menu, setMenu] = useState(false);
-  const [search, setSearch] = useState("");
   const workspace = path.startsWith("/admin")
     ? "admin"
     : path.startsWith("/vendedor")
@@ -244,25 +244,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <Link className="brand" href="/">
                 Gift Store<span>PRESENTES PARA SENTIR</span>
               </Link>
-              <form
-                className="search"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  router.push("/catalogo?busca=" + encodeURIComponent(search));
-                  setMenu(false);
-                }}
-              >
-                <Icon name="search" size={18} />
-                <input
-                  aria-label="Buscar presentes"
-                  placeholder="Qual carinho você procura?"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-                <button aria-label="Pesquisar" type="submit">
-                  <Icon name="arrow" size={16} />
-                </button>
-              </form>
+              <SmartSearch />
               <div className="header-actions">
                 <details className="profiles-menu">
                   <summary>
@@ -321,6 +303,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
               >
                 <Link href="/catalogo">Todos os presentes</Link>
                 <Link href="/catalogo?ofertas=1">Ofertas especiais</Link>
+                <Link href="/cupons">Cupons por tema</Link>
+                <Link href="/presentear">Assistente de presentes</Link>
                 <Link href="/personalizados">Personalizados</Link>
                 <Link href="/admin">Administrador</Link>
                 <Link href="/vendedor">Vendedor</Link>
@@ -344,6 +328,8 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 <h4>Encontre seu mimo</h4>
                 <Link href="/catalogo">Todos os presentes</Link>
                 <Link href="/personalizados">Presentes personalizados</Link>
+                <Link href="/cupons">Cupons por tema</Link>
+                <Link href="/presentear">Encontre seu presente</Link>
                 <Link href="/favoritos">Seus favoritos</Link>
               </div>
               <div>

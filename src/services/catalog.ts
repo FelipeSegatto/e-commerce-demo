@@ -1,12 +1,18 @@
 import type { Category, Product } from "@/domain/types";
+import additions from "@/data/catalog-additions.json";
+import imageFiles from "@/data/catalog-images.json";
+export const CATALOG_REVISION = 3;
 export const categories: Category[] = [
   "Perfumes",
   "Chocolates",
-  "Quadros",
-  "Balões",
+  "Banho & cuidados",
+  "Casa & aromas",
+  "Casa & decoração",
+  "Flores & buquês",
+  "Festas & decoração",
   "Kits & cestas",
 ];
-export const initialProducts: Product[] = [
+const legacyProducts: Product[] = [
   {
     id: "p1",
     slug: "kit-pequenas-alegrias",
@@ -51,7 +57,7 @@ export const initialProducts: Product[] = [
     id: "p4",
     slug: "baloes-celebrar",
     name: "Buquê de Balões Celebrar",
-    category: "Balões",
+    category: "Festas & decoração",
     price: 89.9,
     image: "/photos/balloons.jpg",
     description:
@@ -64,7 +70,7 @@ export const initialProducts: Product[] = [
     id: "p5",
     slug: "quadro-casa",
     name: "Porta-retrato Memórias",
-    category: "Quadros",
+    category: "Casa & decoração",
     price: 119.9,
     image: "/photos/frame.jpg",
     description:
@@ -89,7 +95,7 @@ export const initialProducts: Product[] = [
     id: "p7",
     slug: "perfume-brisa",
     name: "Difusor Brisa",
-    category: "Perfumes",
+    category: "Casa & aromas",
     price: 99.9,
     image: "/photos/diffuser.jpg",
     description:
@@ -101,7 +107,7 @@ export const initialProducts: Product[] = [
     id: "p8",
     slug: "quadro-jardim",
     name: "Quadro Jardim de Formas",
-    category: "Quadros",
+    category: "Casa & decoração",
     price: 129.9,
     image: "/illustrations/frame-green.svg",
     description:
@@ -110,7 +116,32 @@ export const initialProducts: Product[] = [
     options: ["Madeira natural", "Branca"],
   },
 ];
-// Replace this adapter with your API implementation; UI consumes the same domain types.
+const legacyDetails: Record<string, Pick<Product, "subcategory" | "brand">> = {
+  p1: { subcategory: "Gourmet", brand: "Gift Store" },
+  p2: { subcategory: "Kits de fragrâncias", brand: "Aesop" },
+  p3: { subcategory: "Bombons", brand: "Gift Store" },
+  p4: { subcategory: "Balões", brand: "Gift Store" },
+  p5: { subcategory: "Quadros & porta-retratos", brand: "Gift Store" },
+  p6: { subcategory: "Maternidade", brand: "Gift Store" },
+  p7: { subcategory: "Difusores", brand: "Gift Store" },
+  p8: { subcategory: "Quadros & porta-retratos", brand: "Gift Store" },
+};
+const assets: Record<string, string> = imageFiles;
+export const initialProducts: Product[] = [
+  ...legacyProducts.map((p) => ({ ...p, ...legacyDetails[p.id] })),
+  ...(additions as Product[]).map((p) => ({
+    ...p,
+    image: assets[p.slug] || p.image,
+    imagePending: !assets[p.slug],
+    variantImages: Object.fromEntries(
+      Object.keys(p.pendingVariantImages || {}).flatMap((option) =>
+        assets[p.slug + ":" + option]
+          ? [[option, assets[p.slug + ":" + option]]]
+          : [],
+      ),
+    ),
+  })),
+];
 export const catalogService = {
   list: async (): Promise<Product[]> => structuredClone(initialProducts),
   findBySlug: async (slug: string): Promise<Product | undefined> =>
@@ -127,14 +158,33 @@ export const occasions = [
   "Amor & carinho",
   "Casa nova",
   "Boas-vindas",
+  "Autocuidado",
+  "Celebração",
 ];
 export function productOccasions(product: Product): string[] {
+  if (product.occasions) return product.occasions;
   const map: Record<Category, string[]> = {
-    Perfumes: ["Aniversário", "Agradecimento", "Amor & carinho"],
-    Chocolates: ["Aniversário", "Agradecimento", "Amor & carinho"],
-    Quadros: ["Casa nova", "Aniversário", "Agradecimento"],
-    Balões: ["Aniversário", "Boas-vindas"],
-    "Kits & cestas": ["Aniversário", "Amor & carinho", "Boas-vindas"],
+    Perfumes: ["Aniversário", "Agradecimento", "Amor & carinho", "Autocuidado"],
+    Chocolates: [
+      "Aniversário",
+      "Agradecimento",
+      "Amor & carinho",
+      "Celebração",
+    ],
+    "Banho & cuidados": ["Autocuidado", "Agradecimento", "Aniversário"],
+    "Casa & aromas": ["Casa nova", "Autocuidado", "Agradecimento"],
+    "Casa & decoração": ["Casa nova", "Aniversário", "Agradecimento"],
+    "Flores & buquês": [
+      "Amor & carinho",
+      "Aniversário",
+      "Agradecimento",
+      "Boas-vindas",
+    ],
+    "Festas & decoração": ["Aniversário", "Boas-vindas", "Celebração"],
+    "Kits & cestas":
+      product.subcategory === "Maternidade"
+        ? ["Boas-vindas"]
+        : ["Aniversário", "Amor & carinho", "Agradecimento", "Celebração"],
   };
   return map[product.category] || [];
 }

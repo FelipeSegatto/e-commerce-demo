@@ -4,13 +4,13 @@ import { useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Icon, useDemo } from "./demo-provider";
-import {
-  categories,
-  money,
-  occasions,
-  productOccasions,
-} from "@/services/catalog";
-import type { Product } from "@/domain/types";
+import { categories, money } from "@/services/catalog";
+import { ProductCard } from "./product-card";
+import { ProductImage } from "./product-image";
+import { Catalog } from "./catalog";
+import { CouponSection } from "./coupons";
+import { Discovery } from "./discovery";
+import { evaluateCoupon } from "@/services/coupons";
 import { Operations } from "./operations";
 
 export function PageTitle({
@@ -30,71 +30,14 @@ export function PageTitle({
     </div>
   );
 }
-export function ProductCard({ product: p }: { product: Product }) {
-  const router = useRouter();
-  const { state, update, add } = useDemo();
-  const favorite = state.favorites.includes(p.id);
-  return (
-    <article className="product-card">
-      <div className="product-image">
-        <Link href={"/produto/" + p.slug}>
-          <img src={p.image} alt={p.name} loading="lazy" />
-        </Link>
-        {p.originalPrice && p.originalPrice > p.price && (
-          <span className="discount-badge">
-            −{Math.round((1 - p.price / p.originalPrice) * 100)}%
-          </span>
-        )}
-        {p.badge && <span className="product-badge">{p.badge}</span>}
-        <button
-          className={"favorite " + (favorite ? "selected" : "")}
-          aria-label={`${favorite ? "Remover" : "Adicionar"} ${p.name} ${favorite ? "dos" : "aos"} favoritos`}
-          onClick={() =>
-            update((s) => ({
-              ...s,
-              favorites: favorite
-                ? s.favorites.filter((id) => id !== p.id)
-                : [...s.favorites, p.id],
-            }))
-          }
-        >
-          <Icon name="heart" size={18} />
-        </button>
-      </div>
-      <div className="product-info">
-        <p className="eyebrow">{p.category}</p>
-        <Link href={"/produto/" + p.slug}>
-          <h3>{p.name}</h3>
-        </Link>
-        <div className="price">
-          {money(p.price)}{" "}
-          {p.originalPrice && <del>{money(p.originalPrice)}</del>}
-        </div>
-        <button
-          className="card-add"
-          disabled={!p.stock}
-          onClick={() =>
-            p.options
-              ? router.push("/produto/" + p.slug)
-              : add({ productId: p.id, quantity: 1, option: "", message: "" })
-          }
-        >
-          {!p.stock
-            ? "Indisponível"
-            : p.options
-              ? "Escolher opções"
-              : "Adicionar à sacola"}
-          <span className="card-add-icon">
-            <Icon name="bag" size={17} />
-            <Icon name="arrow" size={16} />
-          </span>
-        </button>
-      </div>
-    </article>
-  );
-}
 function Home() {
   const { state } = useDemo();
+  const biggestDiscount = Math.max(
+    0,
+    ...state.products.map((p) =>
+      p.originalPrice ? Math.round((1 - p.price / p.originalPrice) * 100) : 0,
+    ),
+  );
   return (
     <>
       <section className="hero">
@@ -175,7 +118,7 @@ function Home() {
             alt="Cesta de chocolates em oferta"
           />
           <span>
-            ATÉ <b>16%</b> OFF
+            ATÉ <b>{biggestDiscount}%</b> OFF
           </span>
         </div>
         <div className="offers-coupon">
@@ -201,7 +144,7 @@ function Home() {
               href={"/catalogo?categoria=" + encodeURIComponent(c)}
             >
               <span className="category-icon">
-                {["✧", "▦", "▧", "◯", "◇"][i]}
+                {["✧", "▦", "♡", "☼", "▧", "✿", "◯", "◇"][i]}
               </span>
               <span>{c}</span>
               <Icon name="arrow" size={16} />
@@ -249,6 +192,8 @@ function Home() {
           </Link>
         </div>
       </section>
+      <Discovery />
+      <CouponSection compact />
       <section className="section container manifesto">
         <p className="eyebrow">MAIS DO QUE COISAS, CONEXÕES</p>
         <h2>
@@ -261,266 +206,6 @@ function Home() {
         </Link>
       </section>
     </>
-  );
-}
-function Catalog({
-  favorites = false,
-  custom = false,
-}: {
-  favorites?: boolean;
-  custom?: boolean;
-}) {
-  const { state } = useDemo();
-  const params = useSearchParams();
-  const [category, setCategory] = useState(params.get("categoria") || "Todos");
-  const [search, setSearch] = useState(params.get("busca") || "");
-  const [sort, setSort] = useState("featured");
-  const [available, setAvailable] = useState(false);
-  const [occasion, setOccasion] = useState(params.get("ocasiao") || "Todas");
-  const [range, setRange] = useState(params.get("faixa") || "todos");
-  const [offers, setOffers] = useState(params.get("ofertas") === "1");
-  const [personalized, setPersonalized] = useState(false);
-  const ranges = [
-    { id: "todos", label: "Todos os preços", min: 0, max: Infinity },
-    { id: "ate75", label: "Até R$ 75", min: 0, max: 75 },
-    { id: "75a150", label: "De R$ 75 a R$ 150", min: 75, max: 150 },
-    { id: "acima150", label: "Acima de R$ 150", min: 150, max: Infinity },
-  ];
-  const priceRange = ranges.find((r) => r.id === range) || ranges[0];
-  const clearFilters = () => {
-    setCategory("Todos");
-    setSearch("");
-    setOccasion("Todas");
-    setRange("todos");
-    setOffers(false);
-    setPersonalized(false);
-    setAvailable(false);
-    setSort("featured");
-  };
-  const products = state.products
-    .filter(
-      (p) =>
-        (!favorites || state.favorites.includes(p.id)) &&
-        (!custom || p.customizable) &&
-        (category === "Todos" || p.category === category) &&
-        p.name
-          .toLocaleLowerCase("pt-BR")
-          .includes(search.toLocaleLowerCase("pt-BR")) &&
-        (!available || p.stock > 0) &&
-        (occasion === "Todas" || productOccasions(p).includes(occasion)) &&
-        p.price >= priceRange.min &&
-        p.price <= priceRange.max &&
-        (!offers ||
-          (p.originalPrice !== undefined && p.originalPrice > p.price)) &&
-        (!personalized || p.customizable),
-    )
-    .sort((a, b) =>
-      sort === "asc"
-        ? a.price - b.price
-        : sort === "desc"
-          ? b.price - a.price
-          : 0,
-    );
-  return (
-    <div className="container section">
-      <PageTitle
-        eyebrow={
-          favorites
-            ? "SUA SELEÇÃO"
-            : custom
-              ? "DO SEU JEITO"
-              : "ENCONTRE O SEU PRESENTE"
-        }
-        title={
-          favorites
-            ? "Guardados com carinho"
-            : custom
-              ? "Presentes personalizados"
-              : "Um presente para cada sentimento"
-        }
-        description={
-          custom
-            ? "Escolha um presente e acrescente uma mensagem na página do produto."
-            : "Pequenas surpresas para celebrar pessoas especiais."
-        }
-      />
-      {custom && (
-        <div className="steps-cards">
-          <div>
-            <b>01</b>
-            <h3>Escolha o presente</h3>
-            <p>Encontre algo que combine com quem vai receber.</p>
-          </div>
-          <div>
-            <b>02</b>
-            <h3>Dê seu toque</h3>
-            <p>Selecione as opções e escreva um cartão especial.</p>
-          </div>
-          <div>
-            <b>03</b>
-            <h3>Prepare a surpresa</h3>
-            <p>Escolha entrega ou retirada e conclua a simulação.</p>
-          </div>
-        </div>
-      )}
-      <div className="catalog-layout">
-        <aside className="filters">
-          <h3>Categorias</h3>
-          {["Todos", ...categories].map((c) => (
-            <button
-              className={category === c ? "active" : ""}
-              key={c}
-              onClick={() => setCategory(c)}
-            >
-              {c}
-              <span>
-                {
-                  state.products.filter(
-                    (p) => c === "Todos" || p.category === c,
-                  ).length
-                }
-              </span>
-            </button>
-          ))}
-          <div className="filter-group">
-            <label>
-              Por ocasião
-              <select
-                aria-label="Filtrar por ocasião"
-                value={occasion}
-                onChange={(e) => setOccasion(e.target.value)}
-              >
-                {["Todas", ...occasions].map((o) => (
-                  <option key={o}>{o}</option>
-                ))}
-              </select>
-            </label>
-            <label>
-              Faixa de preço
-              <select
-                aria-label="Filtrar por preço"
-                value={range}
-                onChange={(e) => setRange(e.target.value)}
-              >
-                {ranges.map((r) => (
-                  <option value={r.id} key={r.id}>
-                    {r.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
-          <label className="check-label">
-            <input
-              type="checkbox"
-              checked={offers}
-              onChange={(e) => setOffers(e.target.checked)}
-            />{" "}
-            Somente ofertas
-          </label>
-          <label className="check-label">
-            <input
-              type="checkbox"
-              checked={personalized}
-              onChange={(e) => setPersonalized(e.target.checked)}
-            />{" "}
-            Com personalização
-          </label>
-          <label className="check-label">
-            <input
-              type="checkbox"
-              checked={available}
-              onChange={(e) => setAvailable(e.target.checked)}
-            />{" "}
-            Somente disponíveis
-          </label>
-        </aside>
-        <div>
-          <div className="catalog-controls">
-            <input
-              aria-label="Filtrar produtos"
-              placeholder="Buscar um presente…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-            <select
-              aria-label="Ordenar produtos"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-            >
-              <option value="featured">Nossa seleção</option>
-              <option value="asc">Menor preço</option>
-              <option value="desc">Maior preço</option>
-            </select>
-          </div>
-          <div className="active-filters" aria-label="Filtros ativos">
-            {category !== "Todos" && (
-              <button onClick={() => setCategory("Todos")}>{category} ×</button>
-            )}
-            {occasion !== "Todas" && (
-              <button onClick={() => setOccasion("Todas")}>{occasion} ×</button>
-            )}
-            {range !== "todos" && (
-              <button onClick={() => setRange("todos")}>
-                {priceRange.label} ×
-              </button>
-            )}
-            {offers && (
-              <button onClick={() => setOffers(false)}>Em oferta ×</button>
-            )}
-            {personalized && (
-              <button onClick={() => setPersonalized(false)}>
-                Personalizados ×
-              </button>
-            )}
-            {available && (
-              <button onClick={() => setAvailable(false)}>Disponíveis ×</button>
-            )}
-            {search && (
-              <button onClick={() => setSearch("")}>Busca: {search} ×</button>
-            )}
-            {(category !== "Todos" ||
-              occasion !== "Todas" ||
-              range !== "todos" ||
-              offers ||
-              personalized ||
-              available ||
-              search) && (
-              <button className="clear-filters" onClick={clearFilters}>
-                Limpar filtros
-              </button>
-            )}
-          </div>
-          <p className="result-count">
-            {products.length} presentes encontrados
-          </p>
-          {products.length ? (
-            <div className="product-grid catalog-products">
-              {products.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
-            </div>
-          ) : (
-            <div className="empty">
-              <Icon name="heart" size={40} />
-              <h2>
-                {favorites
-                  ? "Sua coleção começa com um coração."
-                  : "Ainda não encontramos esse presente."}
-              </h2>
-              <p>
-                {favorites
-                  ? "Toque no coração de um produto para guardá-lo aqui."
-                  : "Tente outra busca ou categoria."}
-              </p>
-              <button className="button" onClick={clearFilters}>
-                Limpar filtros
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
   );
 }
 function ProductDetail({ slug }: { slug: string }) {
@@ -545,7 +230,7 @@ function ProductDetail({ slug }: { slug: string }) {
       </div>
       <div className="detail-grid">
         <div className="detail-image">
-          <img src={p.image} alt={p.name} />
+          <ProductImage product={p} option={option} loading="eager" />
         </div>
         <div className="detail-copy">
           <p className="eyebrow">
@@ -557,6 +242,28 @@ function ProductDetail({ slug }: { slug: string }) {
             {p.originalPrice && <del>{money(p.originalPrice)}</del>}
           </div>
           <p>{p.description}</p>
+          <div className="product-attributes">
+            {p.brand && (
+              <span>
+                Marca <b>{p.brand}</b>
+              </span>
+            )}
+            {p.subcategory && (
+              <span>
+                Tipo <b>{p.subcategory}</b>
+              </span>
+            )}
+            {p.color && (
+              <span>
+                Cor <b>{p.color}</b>
+              </span>
+            )}
+            {p.material && (
+              <span>
+                Material <b>{p.material}</b>
+              </span>
+            )}
+          </div>
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -649,6 +356,11 @@ function ProductDetail({ slug }: { slug: string }) {
       <div className="product-grid">
         {state.products
           .filter((i) => i.id !== p.id)
+          .sort(
+            (a, b) =>
+              Number(b.category === p.category) -
+              Number(a.category === p.category),
+          )
           .slice(0, 4)
           .map((i) => (
             <ProductCard key={i.id} product={i} />
@@ -660,7 +372,14 @@ function ProductDetail({ slug }: { slug: string }) {
 function Cart() {
   const { state, update, add, notify } = useDemo();
   const [coupon, setCoupon] = useState("");
-  const [discount, setDiscount] = useState(false);
+  const params = useSearchParams();
+  const [appliedCoupon, setAppliedCoupon] = useState(params.get("cupom") || "");
+  const couponResult = evaluateCoupon(
+    appliedCoupon,
+    state.cart,
+    state.products,
+    state.orders.length,
+  );
   const subtotal = state.cart.reduce(
     (n, i) =>
       n +
@@ -694,7 +413,7 @@ function Cart() {
             return (
               <article className="cart-item" key={item.key}>
                 <Link href={"/produto/" + p.slug}>
-                  <img src={p.image} alt={p.name} />
+                  <ProductImage product={p} option={item.option} />
                 </Link>
                 <div>
                   <p className="eyebrow">{p.category}</p>
@@ -765,13 +484,14 @@ function Cart() {
             className="coupon"
             onSubmit={(e) => {
               e.preventDefault();
-              const valid = coupon.trim().toUpperCase() === "GIFT10";
-              setDiscount(valid);
-              notify(
-                valid
-                  ? "Cupom GIFT10 aplicado."
-                  : "Cupom não encontrado. Experimente GIFT10.",
+              const result = evaluateCoupon(
+                coupon,
+                state.cart,
+                state.products,
+                state.orders.length,
               );
+              setAppliedCoupon(result.valid ? result.coupon!.code : "");
+              notify(result.message);
             }}
           >
             <input
@@ -782,19 +502,37 @@ function Cart() {
             />
             <button>Aplicar</button>
           </form>
-          {discount && (
+          {couponResult.valid && (
             <div>
-              <span>GIFT10 (10%)</span>
-              <b>− {money(subtotal * 0.1)}</b>
+              <span>
+                {couponResult.coupon!.code} ({couponResult.coupon!.percent}%)
+              </span>
+              <b>− {money(couponResult.discount)}</b>
             </div>
           )}
+          {appliedCoupon && !couponResult.valid && (
+            <p className="error" role="alert">
+              {couponResult.message}
+            </p>
+          )}
+          {couponResult.valid && (
+            <button className="remove" onClick={() => setAppliedCoupon("")}>
+              Remover cupom
+            </button>
+          )}
+          <Link className="text-link" href="/cupons">
+            Descobrir cupons por tema
+          </Link>
           <div className="total">
             <span>Subtotal</span>
-            <b>{money(subtotal * (discount ? 0.9 : 1))}</b>
+            <b>{money(subtotal - couponResult.discount)}</b>
           </div>
           <Link
             className="button"
-            href={"/checkout" + (discount ? "?cupom=GIFT10" : "")}
+            href={
+              "/checkout" +
+              (couponResult.valid ? "?cupom=" + couponResult.coupon!.code : "")
+            }
           >
             Continuar para checkout <Icon name="arrow" size={16} />
           </Link>
@@ -843,15 +581,20 @@ function Checkout() {
     state.cart.length === 1 &&
     state.cart[0].productId === proposal.productId &&
     state.cart[0].quantity === proposal.quantity;
-  const discountPercent = validProposal
-    ? proposal.discount
-    : params.get("cupom") === "GIFT10"
-      ? 10
-      : 0;
-  const discounted = discountPercent > 0;
+  const couponResult = evaluateCoupon(
+    params.get("cupom") || "",
+    state.cart,
+    state.products,
+    state.orders.length,
+  );
+  const discountAmount = validProposal
+    ? Math.round(subtotal * proposal.discount) / 100
+    : couponResult.discount;
+  const discounted = discountAmount > 0;
   const total =
-    subtotal * (1 - discountPercent / 100) +
-    (delivery === "entrega" ? 19.9 : 0);
+    Math.round(
+      (subtotal - discountAmount + (delivery === "entrega" ? 19.9 : 0)) * 100,
+    ) / 100;
   function field(
     key: keyof typeof form,
     label: string,
@@ -950,6 +693,11 @@ function Checkout() {
                   payment,
                   status: "Recebido",
                   customer: form.name,
+                  coupon:
+                    !validProposal && couponResult.valid
+                      ? couponResult.coupon!.code
+                      : undefined,
+                  discount: discountAmount,
                 },
                 ...s.orders,
               ],
@@ -1141,12 +889,19 @@ function Checkout() {
               </b>
             </div>
           ))}
+          {params.get("cupom") && !validProposal && !couponResult.valid && (
+            <p className="error" role="alert">
+              {couponResult.message}
+            </p>
+          )}
           {discounted && (
             <div>
               <span>
-                {validProposal ? "Desconto da oferta" : "Cupom GIFT10"}
+                {validProposal
+                  ? "Desconto da oferta"
+                  : "Cupom " + couponResult.coupon?.code}
               </span>
-              <b>− {money((subtotal * discountPercent) / 100)}</b>
+              <b>− {money(discountAmount)}</b>
             </div>
           )}
           <div>
@@ -1513,7 +1268,9 @@ function PageContent({ path }: { path: string }) {
   )
     return <Operations key={path + query} path={path} />;
   if (path === "/") return <Home />;
-  if (path === "/catalogo") return <Catalog key={path + query} />;
+  if (path === "/catalogo") return <Catalog key={path} />;
+  if (path === "/cupons") return <CouponSection />;
+  if (path === "/presentear") return <Discovery full />;
   if (path === "/favoritos") return <Catalog favorites />;
   if (path === "/personalizados") return <Catalog custom />;
   if (path.startsWith("/produto/"))

@@ -1,0 +1,604 @@
+[
+  {
+    "name": "Y Yves Saint Laurent",
+    "slug": "y-yves-saint-laurent",
+    "file": "/photos/perfume-4-gift-store.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Sarau Granado",
+    "slug": "sarau-granado",
+    "file": "/photos/perfume-3-gift-store.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bleu de Chanel",
+    "slug": "bleu-de-chanel",
+    "file": "/photos/perfume-2-gift-store.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Libre Yves Saint Laurent",
+    "slug": "libre-yves-saint-laurent",
+    "file": "/photos/perfume-gift-store.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Caixa de Bombons Sortidos",
+    "slug": "caixa-de-bombons-sortidos",
+    "file": "/photos/chocolate-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Chocolates Seashells",
+    "slug": "chocolates-seashells",
+    "file": "/photos/chocalate-gifstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Balões Pastel",
+    "slug": "baloes-pastel",
+    "file": "/photos/baloes-giftstores-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Balões Safari",
+    "slug": "baloes-safari",
+    "file": "/photos/baloes-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Seleção de Bombons Godiva",
+    "slug": "selecao-de-bombons-godiva",
+    "file": "/photos/chocolate-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Lindor ao Leite",
+    "slug": "lindor-ao-leite",
+    "file": "/photos/chocolate-giftore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Enfeites de Papel Coloridos",
+    "slug": "enfeites-de-papel-coloridos",
+    "file": "/photos/baloes-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Balões Disco",
+    "slug": "baloes-disco",
+    "file": "/photos/baloes-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Balões Metalizados",
+    "slug": "baloes-metalizados",
+    "file": "/photos/baloes-giftstore-8.jpg",
+    "status": "linked",
+    "variants": {
+      "Dourado": "/photos/baloes-giftstore-7.jpg",
+      "Rosé": "/photos/baloes-giftstore-6.jpg",
+      "Branco perolado": "/photos/baloes-giftstore-8.jpg"
+    }
+  },
+  {
+    "name": "Sabonete Líquido White Jasmine",
+    "slug": "sabonete-liquido-white-jasmine",
+    "file": "/photos/sabonete-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Sabonete em Barra Azulejo",
+    "slug": "sabonete-em-barra-azulejo",
+    "file": "/photos/sabonete-gifstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Kit Sabonetes Artesanais",
+    "slug": "kit-sabonetes-artesanais",
+    "file": "/photos/sabonete-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Cesta Gourmet Jardim",
+    "slug": "cesta-gourmet-jardim",
+    "file": "/photos/cesta-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Cesta Queijos & Vinho",
+    "slug": "cesta-queijos-vinho",
+    "file": "/photos/cesta-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Cesta Gourmet Celebração",
+    "slug": "cesta-gourmet-celebracao",
+    "file": "/photos/cesta-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Cesta Café da Manhã",
+    "slug": "cesta-cafe-da-manha",
+    "file": "/photos/cesta-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Caixa Boas-vindas Bebê",
+    "slug": "caixa-boas-vindas-bebe",
+    "file": "/photos/cesta-giftstore-6.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Kit Pausa para o Chá",
+    "slug": "kit-pausa-para-o-cha",
+    "file": "/photos/cesta-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Buquê de Rosas Vermelhas Premium",
+    "slug": "buque-de-rosas-vermelhas-premium",
+    "file": "/photos/buque-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Hastes de Lírios Rosa",
+    "slug": "hastes-de-lirios-rosa",
+    "file": "/photos/buque-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Buquê de Flores do Campo",
+    "slug": "buque-de-flores-do-campo",
+    "file": "/photos/buque-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Arranjo de Mosquitinho no Vaso",
+    "slug": "arranjo-de-mosquitinho-no-vaso",
+    "file": "/photos/buque-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Buquê de Rosas Brancas",
+    "slug": "buque-de-rosas-brancas",
+    "file": "/photos/buque-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Buquê de Rosas Vermelhas Clássico",
+    "slug": "buque-de-rosas-vermelhas-classico",
+    "file": "/photos/buque-giftstore-8.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Rosas Rosé",
+    "slug": "rosas-rose",
+    "file": "/photos/buque-giftstore-7.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Buquê de Mosquitinho",
+    "slug": "buque-de-mosquitinho",
+    "file": "/photos/buque-giftstore-6.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vela Coffee & Whiskey",
+    "slug": "vela-coffee-whiskey",
+    "file": "/photos/vela-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vela Maison",
+    "slug": "vela-maison",
+    "file": "/photos/vela-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vela Lemon Cake Pop",
+    "slug": "vela-lemon-cake-pop",
+    "file": "/photos/vela-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Difusor Lavanda",
+    "slug": "difusor-lavanda",
+    "file": "/photos/difusor-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Difusor Aconchego",
+    "slug": "difusor-aconchego",
+    "file": "/photos/difusor-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Difusor Bamboo Forêt",
+    "slug": "difusor-bamboo-foret",
+    "file": "/photos/difusor-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vela Menta & Alecrim",
+    "slug": "vela-menta-alecrim",
+    "file": "/photos/vela-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Difusor Frasco Verde",
+    "slug": "difusor-frasco-verde",
+    "file": "/photos/difusor-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Difusor Home Black",
+    "slug": "difusor-home-black",
+    "file": "/photos/difusor-giftstore-4.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Loção Facial Protective Aesop",
+    "slug": "locao-facial-protective-aesop",
+    "file": "/photos/protetor-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bruma Facial Aesop",
+    "slug": "bruma-facial-aesop",
+    "file": "/photos/hidratante-facial-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bálsamo para Mãos Aesop",
+    "slug": "balsamo-para-maos-aesop",
+    "file": "/photos/hidratante-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bálsamo Corporal Aesop",
+    "slug": "balsamo-corporal-aesop",
+    "file": "/photos/hidratante-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Kit de Cuidados Faciais Aesop",
+    "slug": "kit-de-cuidados-faciais-aesop",
+    "file": "/photos/kit-facial-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Loção Facial Sage & Zinc Aesop",
+    "slug": "locao-facial-sage-zinc-aesop",
+    "file": "/photos/protetor-giftstore2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Kit Miniaturas Aesop",
+    "slug": "kit-miniaturas-aesop",
+    "file": "/photos/kit-hidratante-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Prada Frasco Clássico",
+    "slug": "prada-frasco-classico",
+    "file": "/photos/perfume-giftstore-6.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Prada Frasco Verde",
+    "slug": "prada-frasco-verde",
+    "file": "/photos/perfume-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Conjunto L’Homme Prada",
+    "slug": "conjunto-lhomme-prada",
+    "file": "/photos/sabonete-giftstore-5.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Body Cleansing Slab Aesop",
+    "slug": "body-cleansing-slab-aesop",
+    "file": "/photos/sabonete-barra-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Resurrection Hand Wash Aesop",
+    "slug": "resurrection-hand-wash-aesop",
+    "file": "/photos/sabonete-mao-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Duo de Limpeza Aesop",
+    "slug": "duo-de-limpeza-aesop",
+    "file": "/photos/kit-sabonete-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Conjunto La Femme Prada",
+    "slug": "conjunto-la-femme-prada",
+    "file": "/photos/sabonete-giftstore-6.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Sabonete Líquido Verbena",
+    "slug": "sabonete-liquido-verbena",
+    "file": "/photos/sabonete-giftstore-8.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Sabonete em Barra Verbena",
+    "slug": "sabonete-em-barra-verbena",
+    "file": "/photos/sabonete-giftstore-7.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Tobacco Vanille Tom Ford",
+    "slug": "tobacco-vanille-tom-ford",
+    "file": "/photos/perfume-giftstore-7.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bálsamo Labial Aesop",
+    "slug": "balsamo-labial-aesop",
+    "file": "/photos/lipbalm-giftstore-3.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Bálsamo Labial Karité",
+    "slug": "balsamo-labial-karite",
+    "file": "/photos/lipbalm-giftstore-2.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Lip Balm Creamy",
+    "slug": "lip-balm-creamy",
+    "file": "/photos/lipbalm-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Soleil Neige Tom Ford",
+    "slug": "soleil-neige-tom-ford",
+    "file": "/photos/perfume-giftstore-9.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Fucking Fabulous Tom Ford",
+    "slug": "fucking-fabulous-tom-ford",
+    "file": "/photos/perfume-giftstore-8.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Esfera Decorativa de Fibra",
+    "slug": "esfera-decorativa-de-fibra",
+    "file": "/photos/decorativo-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Manta Verde com Franjas",
+    "slug": "manta-verde-com-franjas",
+    "file": "/photos/manta-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Porta-retrato Madeira Natural",
+    "slug": "porta-retrato-madeira-natural",
+    "file": "/photos/quadros-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vaso de Vidro Colorido",
+    "slug": "vaso-de-vidro-colorido",
+    "file": "/photos/pote-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Quadro Linhas Orgânicas",
+    "slug": "quadro-linhas-organicas",
+    "file": "/photos/quadro-giftstore-2.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Espelho de Parede Preto",
+    "slug": "espelho-de-parede-preto",
+    "file": "/photos/espelho-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vaso Rosa Alto",
+    "slug": "vaso-rosa-alto",
+    "file": "/photos/vaso-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Almofada Textura Creme",
+    "slug": "almofada-textura-creme",
+    "file": "/photos/almofada-giftstore-2.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vaso Preto com Alças",
+    "slug": "vaso-preto-com-alcas",
+    "file": "/photos/vaso-giftstore-3.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Escultura Decorativa Quati",
+    "slug": "escultura-decorativa-quati",
+    "file": "/photos/adorno-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Vaso Rosa Baixo",
+    "slug": "vaso-rosa-baixo",
+    "file": "/photos/vaso-giftstore-2.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Almofada Trama Natural",
+    "slug": "almofada-trama-natural",
+    "file": "/photos/almofada-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Lanterna Decorativa",
+    "slug": "lanterna-decorativa",
+    "file": "/photos/lanter-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Porta-retrato Preto",
+    "slug": "porta-retrato-preto",
+    "file": "/photos/porta-retrato-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Espelho de Chão Madeira",
+    "slug": "espelho-de-chao-madeira",
+    "file": "/photos/espelho-giftstore-2.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Manta Listrada com Franjas",
+    "slug": "manta-listrada-com-franjas",
+    "file": "/photos/manta-giftstore-2.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Almofada Branca com Pompons",
+    "slug": "almofada-branca-com-pompons",
+    "file": "/photos/almofada-giftstore-3.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Jogo Americano Trama",
+    "slug": "jogo-americano-trama",
+    "file": "/photos/kit-tapete-giftstore.webp",
+    "status": "linked",
+    "variants": {
+      "Marrom": "/photos/kit-tapete-giftstore.webp",
+      "Natural": "/photos/kit-tapete-giftstore.webp"
+    }
+  },
+  {
+    "name": "Vaso Branco Ondulado",
+    "slug": "vaso-branco-ondulado",
+    "file": "/photos/vaso-giftstore-4.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Folha Decorativa de Palmeira",
+    "slug": "folha-decorativa-de-palmeira",
+    "file": "/photos/leque-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Quadro Abstrato Terracota",
+    "slug": "quadro-abstrato-terracota",
+    "file": "/photos/quadro-giftstore-3.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Trio Resurrection Aesop",
+    "slug": "trio-resurrection-aesop",
+    "file": "/photos/kit-perfume-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Jogo Americano Natural",
+    "slug": "jogo-americano-natural",
+    "file": "/photos/tapete-giftstore.webp",
+    "status": "linked",
+    "variants": {}
+  },
+  {
+    "name": "Gloam Aesop",
+    "slug": "gloam-aesop",
+    "file": "/photos/perfume-giftstore.jpg",
+    "status": "linked",
+    "variants": {}
+  }
+]
