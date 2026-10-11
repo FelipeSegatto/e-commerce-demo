@@ -4374,3 +4374,20 @@ footer {
   color: var(--muted);
   margin-top: 6px;
 }
+.stock-adjustment-preview {
+  display: grid;
+  gap: 10px;
+}
+.stock-history {
+  border-top: 1px solid var(--line);
+  margin-top: 28px;
+  padding-top: 20px;
+}
+.stock-history small {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+}
+.stock-history .list-row {
+  gap: 20px;
+}

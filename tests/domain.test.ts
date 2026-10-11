@@ -25,6 +25,35 @@ import {
 } from "../src/services/finance";
 import type { Order } from "../src/domain/types";
 import { completePhysicalSale } from "../src/services/assisted-sales";
+import { adjustStock } from "../src/services/stock";
+
+test("manual stock adjustments record reasons and prevent invalid, stale or repeated movements", () => {
+  const state = freshState();
+  const movement = {
+    id: "adjust",
+    productId: "p1",
+    previous: 12,
+    next: 4,
+    quantity: -8,
+    reason: "Contagem física",
+    note: "Saldo conferido",
+    actor: "Admin Demo",
+    createdAt: "2026-10-11T12:00:00Z",
+  };
+  const result = adjustStock(state, movement);
+  assert.equal(result.state.products[0].stock, 4);
+  assert.deepEqual(result.state.stockMovements, [movement]);
+  assert.equal(state.products[0].stock, 12);
+  assert.ok(adjustStock(result.state, movement).error);
+  assert.ok(adjustStock(state, { ...movement, reason: "" }).error);
+  assert.ok(adjustStock(state, { ...movement, quantity: -13, next: -1 }).error);
+  assert.ok(
+    adjustStock(state, { ...movement, quantity: 1.5, next: 13.5 }).error,
+  );
+  assert.ok(
+    adjustStock(state, { ...movement, quantity: 10000, next: 10012 }).error,
+  );
+});
 
 test("physical assisted sales preserve the cart, apply approved discount, snapshot prices and cannot convert twice", () => {
   const state = freshState();

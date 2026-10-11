@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { StockAdjustment } from "./stock-adjustment";
 import { OfferActions } from "./offer-actions";
 import { AdminCoupons } from "./admin-coupons";
 import { ProductEditor } from "./product-editor";
@@ -37,6 +38,7 @@ export function Operations({ path }: { path: string }) {
   const [now] = useState(() => Date.now());
   const seller = path.startsWith("/vendedor");
   const page = path.split("/")[2] || "dashboard";
+  const [adjustingStock, setAdjustingStock] = useState<Product | null>(null);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [stockFilter, setStockFilter] = useState("Todos");
   const [search, setSearch] = useState("");
@@ -76,7 +78,7 @@ export function Operations({ path }: { path: string }) {
             ? p.stock > 0 && p.stock <= 5
             : p.stock === 0)),
   );
-  const tableProducts = (inventory = false) => (
+  const tableProducts = () => (
     <div className="table-scroll">
       <table>
         <thead>
@@ -103,33 +105,27 @@ export function Operations({ path }: { path: string }) {
               <td>{p.category}</td>
               <td>{money(p.price)}</td>
               <td>
-                <span className={"badge " + (p.stock <= 5 ? "warning" : "")}>
-                  {p.stock} unidades
-                </span>
-                {inventory && (
-                  <input
-                    aria-label={`Estoque de ${p.name}`}
-                    className="stock-input"
-                    type="number"
-                    min="0"
-                    max="9999"
-                    value={p.stock}
-                    onChange={(e) => {
-                      const stock = Math.min(
-                        9999,
-                        Math.max(0, Math.floor(Number(e.target.value) || 0)),
-                      );
-                      update((s) => ({
-                        ...s,
-                        products: s.products.map((i) =>
-                          i.id === p.id ? { ...i, stock } : i,
-                        ),
-                      }));
-                    }}
-                  />
-                )}
+                <output aria-label={"Estoque de " + p.name}>{p.stock}</output>{" "}
+                un.
+                <small className={"badge " + (p.stock <= 5 ? "warning" : "")}>
+                  {p.stock === 0
+                    ? "Sem estoque"
+                    : p.stock <= 5
+                      ? "Baixo estoque"
+                      : "Disponível"}
+                </small>
               </td>
               <td className="product-management-actions">
+                {!seller && (
+                  <button
+                    type="button"
+                    className="text-link"
+                    aria-label={"Ajustar estoque de " + p.name}
+                    onClick={() => setAdjustingStock(p)}
+                  >
+                    Ajustar estoque
+                  </button>
+                )}
                 {!seller && (
                   <button
                     type="button"
@@ -221,6 +217,12 @@ export function Operations({ path }: { path: string }) {
   const base = seller ? "/vendedor" : "/admin";
   return (
     <div className="operations-content">
+      {!seller && adjustingStock && (
+        <StockAdjustment
+          product={adjustingStock}
+          onClose={() => setAdjustingStock(null)}
+        />
+      )}
       {!seller && editingProduct && (
         <ProductEditor
           product={editingProduct}
@@ -460,12 +462,13 @@ export function Operations({ path }: { path: string }) {
                 ))}
               </div>
             ) : (
-              tableProducts(!seller)
+              tableProducts()
             )}
             {!seller && (
               <p className="fine-print">
-                Ajustes salvos automaticamente apenas neste navegador. Não há
-                reserva de estoque no backend.
+                O saldo é atualizado por vendas concluídas ou por ajustes
+                manuais confirmados com motivo. Os ajustes ficam no histórico do
+                produto neste navegador.
               </p>
             )}
           </section>

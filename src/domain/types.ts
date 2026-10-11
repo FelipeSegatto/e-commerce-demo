@@ -70,6 +70,7 @@ export type Proposal = {
   status: "Aguardando aprovação" | "Aprovada" | "Convertida";
 };
 export type DemoState = {
+  stockMovements?: StockMovement[];
   coupons: Coupon[];
   editedProductIds?: string[];
   catalogRevision?: number;
@@ -79,4 +80,15 @@ export type DemoState = {
   proposals: Proposal[];
   products: Product[];
   session: string | null;
+};
+export type StockMovement = {
+  id: string;
+  productId: string;
+  previous: number;
+  next: number;
+  quantity: number;
+  reason: string;
+  note: string;
+  actor: string;
+  createdAt: string;
 };

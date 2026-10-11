@@ -307,16 +307,39 @@ import assert from "node:assert/strict";
       .waitFor();
     await goto("/admin/estoque");
     assert.equal(
-      await page.getByLabel("Estoque de Kit Pequenas Alegrias").inputValue(),
+      await page
+        .getByLabel("Estoque de Kit Pequenas Alegrias", { exact: true })
+        .textContent(),
       "9",
     );
     assert.equal(
       await page
-        .getByLabel("Estoque de Caixa de Chocolates Afeto")
-        .inputValue(),
+        .getByLabel("Estoque de Caixa de Chocolates Afeto", { exact: true })
+        .textContent(),
       "16",
     );
-    await page.getByLabel("Estoque de Caixa de Chocolates Afeto").fill("0");
+    await page
+      .getByRole("button", {
+        name: "Ajustar estoque de Caixa de Chocolates Afeto",
+        exact: true,
+      })
+      .click();
+    await page
+      .getByLabel("Tipo de ajuste", { exact: true })
+      .selectOption("saida");
+    await page.getByLabel("Quantidade do ajuste", { exact: true }).fill("16");
+    await page
+      .getByLabel("Motivo do ajuste", { exact: true })
+      .selectOption("Avaria");
+    await page
+      .getByRole("checkbox", {
+        name: "Conferi a quantidade e o motivo deste ajuste.",
+        exact: true,
+      })
+      .check();
+    await page
+      .getByRole("button", { name: "Confirmar ajuste", exact: true })
+      .click();
     await goto("/produto/chocolates-afeto");
     assert.equal(
       await page

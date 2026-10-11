@@ -38,14 +38,74 @@ try {
     .getByLabel("Nome do produto", { exact: true })
     .fill("Kit editado pelo admin");
   await page.getByLabel("Preço (R$)", { exact: true }).fill("149.9");
-  await page.getByLabel("Estoque", { exact: true }).fill("4");
+  assert.equal(
+    await page.getByLabel("Estoque", { exact: true }).getAttribute("readonly"),
+    "",
+  );
   await page
     .getByRole("button", { name: "Salvar alterações", exact: true })
     .click();
   await page.getByText("Kit editado pelo admin", { exact: true }).waitFor();
+  await page
+    .getByRole("button", {
+      name: "Ajustar estoque de Kit editado pelo admin",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByLabel("Tipo de ajuste", { exact: true })
+    .selectOption("saida");
+  await page.getByLabel("Quantidade do ajuste", { exact: true }).fill("13");
+  await page
+    .getByLabel("Motivo do ajuste", { exact: true })
+    .selectOption("Contagem física");
+  assert.equal(
+    await page
+      .getByRole("button", { name: "Confirmar ajuste", exact: true })
+      .isDisabled(),
+    true,
+  );
+  await page.getByLabel("Quantidade do ajuste", { exact: true }).fill("8");
+  await page
+    .getByRole("checkbox", {
+      name: "Conferi a quantidade e o motivo deste ajuste.",
+      exact: true,
+    })
+    .check();
+  await page.getByRole("button", { name: "Cancelar", exact: true }).click();
+  assert.equal(
+    await page
+      .getByLabel("Estoque de Kit editado pelo admin", { exact: true })
+      .textContent(),
+    "12",
+  );
+  await page
+    .getByRole("button", {
+      name: "Ajustar estoque de Kit editado pelo admin",
+      exact: true,
+    })
+    .click();
+  await page
+    .getByLabel("Tipo de ajuste", { exact: true })
+    .selectOption("saida");
+  await page.getByLabel("Quantidade do ajuste", { exact: true }).fill("8");
+  await page
+    .getByLabel("Motivo do ajuste", { exact: true })
+    .selectOption("Contagem física");
+  await page
+    .getByRole("checkbox", {
+      name: "Conferi a quantidade e o motivo deste ajuste.",
+      exact: true,
+    })
+    .check();
+  await page
+    .getByRole("button", { name: "Confirmar ajuste", exact: true })
+    .click();
   await go("/admin/estoque");
   assert.equal(
-    await page.getByLabel("Estoque de Kit editado pelo admin").inputValue(),
+    await page
+      .getByLabel("Estoque de Kit editado pelo admin", { exact: true })
+      .textContent(),
     "4",
   );
   await page.getByLabel("Buscar produtos").fill("Kit editado");

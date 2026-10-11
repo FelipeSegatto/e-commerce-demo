@@ -46,17 +46,23 @@ export function ProductEditor({
           update((state) => ({
             ...state,
             products: state.products.map((p) =>
-              p.id === product.id ? { ...draft, name: draft.name.trim() } : p,
+              p.id === product.id
+                ? { ...draft, name: draft.name.trim(), stock: p.stock }
+                : p,
             ),
             editedProductIds: [
               ...new Set([...(state.editedProductIds || []), product.id]),
             ],
           }));
-          notify("Produto atualizado no catálogo e no estoque.");
+          notify("Produto atualizado no catálogo.");
           onClose();
         }}
       >
         {field("name", "Nome do produto")}
+        <p className="fine-print">
+          Para mudar o saldo, use Ajustar estoque na lista de produtos. Todo
+          ajuste exige motivo e confirmação.
+        </p>
         <div className="form-grid">
           <label>
             Categoria
@@ -117,10 +123,8 @@ export function ProductEditor({
               step="1"
               min="0"
               max="9999"
-              value={draft.stock}
-              onChange={(e) =>
-                setDraft({ ...draft, stock: Number(e.target.value) })
-              }
+              value={product.stock}
+              readOnly
             />
           </label>
         </div>
