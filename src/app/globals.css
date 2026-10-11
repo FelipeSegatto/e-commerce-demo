@@ -4348,3 +4348,29 @@ footer {
     padding: 20px;
   }
 }
+.offer-channel-section {
+  margin-top: 28px;
+  border-top: 1px solid var(--line);
+  padding-top: 24px;
+}
+.offer-channel-section h3 {
+  margin-bottom: 12px;
+}
+.offer-channel-options {
+  display: grid;
+  gap: 12px;
+  margin: 20px 0;
+}
+.offer-channel-options .radio-card {
+  align-items: flex-start;
+}
+.offer-channel-options small {
+  display: block;
+  line-height: 1.6;
+  margin-top: 6px;
+}
+.finance-category-panel .list-row small {
+  display: block;
+  color: var(--muted);
+  margin-top: 6px;
+}

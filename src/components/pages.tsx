@@ -636,6 +636,19 @@ function Checkout() {
         </Link>
       </div>
     );
+  if (params.get("oferta") && !validProposal)
+    return (
+      <div className="empty">
+        <h1>Esta oferta não está disponível para compra.</h1>
+        <p>
+          Ela pode ter sido concluída, aguardar aprovação ou não corresponder
+          aos produtos da sacola. Revise a proposta antes de continuar.
+        </p>
+        <Link className="button" href="/vendedor/propostas">
+          Revisar propostas
+        </Link>
+      </div>
+    );
   if (!state.cart.length)
     return (
       <div className="empty">
@@ -699,6 +712,11 @@ function Checkout() {
                   payment,
                   status: "Recebido",
                   customer: form.name,
+                  channel: "online",
+                  seller: validProposal
+                    ? proposal.seller || "Vendedor Demo"
+                    : undefined,
+                  proposalId: validProposal ? proposal.id : undefined,
                   coupon:
                     !validProposal && couponResult.valid
                       ? couponResult.coupon!.code
@@ -1207,7 +1225,7 @@ function Info({ page }: { page: string }) {
         {[
           [
             "Sobre esta demonstração",
-            "Gift Store é uma marca fictícia. Todos os produtos, preços e processos são ilustrativos. Não há vendas, pagamentos ou entregas reais.",
+            "Gift Store é uma demonstração de loja de presentes com vendas híbridas: o vendedor monta uma proposta com vários produtos, que pode ser usada pelo cliente no checkout online ou concluída pelo vendedor no atendimento físico. Descontos acima de 10% aguardam aprovação do admin. Ao concluir, o sistema gera o pedido, identifica canal e vendedor e baixa o estoque. Não há pagamentos ou entregas reais. Os dados e links de oferta ficam neste navegador.",
           ],
           [
             "Entrega e retirada",
@@ -1258,6 +1276,18 @@ function Info({ page }: { page: string }) {
           </Link>
           <p className="fine-print">
             História e marca criadas exclusivamente para esta demonstração.
+          </p>
+          <h2>Uma loja, dois jeitos de comprar.</h2>
+          <p>
+            Esta demo combina compras online e atendimento presencial. O
+            vendedor monta uma proposta com vários presentes e o cliente pode
+            usá-la no checkout ou concluir a compra na loja com o vendedor. O
+            desconto aprovado acompanha a oferta; a conclusão cria o pedido e
+            atualiza o estoque.
+          </p>
+          <p className="fine-print">
+            Pagamentos são simulados. Ofertas e pedidos ficam salvos neste
+            navegador.
           </p>
         </div>
         <img src="/photos/hero.jpg" alt="Composição de presentes com flores" />

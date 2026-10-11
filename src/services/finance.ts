@@ -120,8 +120,13 @@ export function demoSalesHistory(
         discount,
         delivery,
         payment: index % 3 === 0 ? "Cartão de crédito" : "Pix",
-        status: now - date > 7 * 86400000 ? "Entregue" : "Em preparação",
+        status:
+          index % 3 === 1 || now - date > 7 * 86400000
+            ? "Entregue"
+            : "Em preparação",
         customer: "Cliente demonstrativo",
+        channel: index % 3 === 1 ? "presencial" : "online",
+        seller: index % 3 === 1 ? "Vendedor Demo" : undefined,
       });
     }
   }

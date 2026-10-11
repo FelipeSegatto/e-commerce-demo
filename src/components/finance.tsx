@@ -198,6 +198,28 @@ export function Finance({
           );
         })}
       </div>
+      <section className="panel finance-category-panel">
+        <h2>Onde as vendas acontecem</h2>
+        <p className="fine-print">
+          Online e presencial fazem parte do mesmo resultado. Vendas assistidas
+          identificam o vendedor no pedido.
+        </p>
+        {(["online", "presencial"] as const).map((channel) => {
+          const orders = timeline.orders.filter(
+            (order) => (order.channel || "online") === channel,
+          );
+          const total = orders.reduce((sum, order) => sum + order.total, 0);
+          return (
+            <div className="list-row" key={channel}>
+              <span>
+                {channel === "online" ? "Compra online" : "Venda presencial"}
+                <small>{orders.length} pedido(s)</small>
+              </span>
+              <b>{money(total)}</b>
+            </div>
+          );
+        })}
+      </section>
       {selected && (
         <div className="notice finance-point-detail" role="status">
           {period === "month" ? "Dia " : ""}

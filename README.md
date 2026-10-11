@@ -1,6 +1,6 @@
 # Gift Store
 
-Demo navegável de uma loja de presentes em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca Gift Store fictícia; nomes de produtos e fotografias fornecidos pelo usuário, com preços e estoques demonstrativos. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
+Demo navegável de uma loja de presentes com **vendas híbridas: online e presenciais assistidas pelo vendedor**, em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca Gift Store fictícia; nomes de produtos e fotografias fornecidos pelo usuário, com preços e estoques demonstrativos. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
 
 ## Executar
 
@@ -28,7 +28,7 @@ No ambiente cloud, use `NPM_CONFIG_CACHE=/workspace/.npm-cache` se o diretório 
 - Administrador: indicadores, produtos e cadastro, ajuste de estoque, pedidos e atualização de status, resumo financeiro, equipe e aprovação de descontos.
 - Institucional: sobre, contato simulado, entrega/trocas/privacidade.
 
-Use o seletor fixo **Explorar demo**, no canto inferior, como ponto único de troca entre Loja, Administrador e Vendedor. Ele identifica o modo atual, descreve cada perspectiva e permite reiniciar os dados. Fecha por Escape ou clique fora e funciona por teclado e toque. Os painéis podem ser acessados diretamente em `/admin` e `/vendedor`, sem login real. Para testar o fluxo assistido: crie uma proposta no vendedor, aprove o desconto no administrador se necessário, abra a oferta e conclua o checkout. A proposta será convertida, o pedido aparecerá no painel e o estoque será reduzido.
+Use o seletor fixo **Explorar demo**, no canto inferior, como ponto único de troca entre Loja, Administrador e Vendedor. Ele identifica o modo atual, descreve cada perspectiva e permite reiniciar os dados. Fecha por Escape ou clique fora e funciona por teclado e toque. Os painéis podem ser acessados diretamente em `/admin` e `/vendedor`, sem login real. Para testar o fluxo híbrido: crie uma proposta com vários produtos no vendedor e aprove o desconto no administrador se necessário. Na oferta, escolha **Comprar online** para o cliente concluir o checkout com entrega ou retirada, ou **Concluir na loja** para o vendedor registrar Pix, cartão ou dinheiro e confirmar a simulação do pagamento e da entrega dos produtos. A conclusão converte a proposta uma única vez, cria o pedido com canal e vendedor e baixa o estoque. A venda física aparece como entregue e sem frete. Nenhum pagamento real é processado.
 
 ## Limites da demonstração
 

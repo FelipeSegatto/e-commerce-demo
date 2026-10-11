@@ -24,6 +24,81 @@ import {
   salesTimeline,
 } from "../src/services/finance";
 import type { Order } from "../src/domain/types";
+import { completePhysicalSale } from "../src/services/assisted-sales";
+
+test("physical assisted sales preserve the cart, apply approved discount, snapshot prices and cannot convert twice", () => {
+  const state = freshState();
+  state.cart = [
+    { key: "cart", productId: "p5", quantity: 1, option: "", message: "" },
+  ];
+  state.proposals = [
+    {
+      id: "physical",
+      seller: "Vendedor Demo",
+      customer: "Cliente Loja",
+      items: [
+        { productId: "p1", quantity: 2 },
+        { productId: "p3", quantity: 1 },
+      ],
+      discount: 15,
+      status: "Aprovada",
+    },
+  ];
+  const result = completePhysicalSale(
+    state,
+    "physical",
+    "Dinheiro",
+    "order",
+    "2026-10-11T12:00:00Z",
+  );
+  assert.equal(result.error, undefined);
+  assert.equal(result.order?.channel, "presencial");
+  assert.equal(result.order?.status, "Entregue");
+  assert.equal(result.order?.delivery, "retirada");
+  assert.equal(result.order?.discount, 58.46);
+  assert.equal(result.order?.total, 331.24);
+  assert.equal(result.order?.items[0].unitPrice, 159.9);
+  assert.equal(result.state.products.find((p) => p.id === "p1")?.stock, 10);
+  assert.deepEqual(result.state.cart, state.cart);
+  assert.equal(result.state.proposals[0].status, "Convertida");
+  const duplicate = completePhysicalSale(
+    result.state,
+    "physical",
+    "Pix",
+    "another",
+    "2026-10-11T12:00:00Z",
+  );
+  assert.equal(duplicate.state, result.state);
+  assert.ok(duplicate.error);
+  const pending = {
+    ...state,
+    proposals: [
+      { ...state.proposals[0], status: "Aguardando aprovação" as const },
+    ],
+  };
+  assert.ok(
+    completePhysicalSale(
+      pending,
+      "physical",
+      "Pix",
+      "order",
+      "2026-10-11T12:00:00Z",
+    ).error,
+  );
+  const emptyStock = {
+    ...state,
+    products: state.products.map((p) => ({ ...p, stock: 0 })),
+  };
+  assert.ok(
+    completePhysicalSale(
+      emptyStock,
+      "physical",
+      "Pix",
+      "order",
+      "2026-10-11T12:00:00Z",
+    ).error,
+  );
+});
 
 test("sales history reconciles every order and calendar chart across all ranges", () => {
   const now = Date.parse("2026-10-11T18:00:00Z");

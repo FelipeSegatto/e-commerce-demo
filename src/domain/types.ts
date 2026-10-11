@@ -40,6 +40,9 @@ export type CartItem = {
   unitPrice?: number;
 };
 export type Order = {
+  channel?: "online" | "presencial";
+  seller?: string;
+  proposalId?: string;
   id: string;
   createdAt: string;
   items: CartItem[];
@@ -56,6 +59,7 @@ export type ProposalItem = {
   quantity: number;
 };
 export type Proposal = {
+  seller?: string;
   id: string;
   customer: string;
   items?: ProposalItem[];

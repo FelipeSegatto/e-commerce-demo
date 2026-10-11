@@ -201,13 +201,29 @@ import assert from "node:assert/strict";
       .getByRole("button", { name: "Criar proposta", exact: true })
       .click();
     await page.getByText("Aguardando aprovação", { exact: true }).waitFor();
+    const pendingId = await page.evaluate(
+      () =>
+        JSON.parse(localStorage.getItem("gift-store-demo-v1")).proposals[0].id,
+    );
+    await goto("/oferta/" + pendingId);
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Comprar online com esta oferta",
+          exact: true,
+        })
+        .isDisabled(),
+      true,
+    );
     await goto("/admin/descontos");
     await page.getByRole("button", { name: "Aprovar", exact: true }).click();
     await page.getByText("Aprovada", { exact: true }).waitFor();
     await page.getByRole("link", { name: "Abrir oferta" }).click();
     await page.locator(".proposal-summary-item").first().waitFor();
     assert.equal(await page.locator(".proposal-summary-item").count(), 2);
-    await page.getByRole("button", { name: "Usar esta oferta" }).click();
+    await page
+      .getByRole("button", { name: "Comprar online com esta oferta" })
+      .click();
     await page.getByText("Desconto da oferta", { exact: true }).waitFor();
     await checkout("Cliente Oferta");
     const offerOrder = await page.evaluate(
@@ -218,16 +234,87 @@ import assert from "node:assert/strict";
       offerOrder.items.find((item) => item.productId === "p1").quantity,
       2,
     );
-    assert.equal(offerOrder.items.find((item) => item.productId === "p1").unitPrice, 159.9);
+    assert.equal(
+      offerOrder.items.find((item) => item.productId === "p1").unitPrice,
+      159.9,
+    );
     await goto("/vendedor/propostas");
     await page.getByText("Convertida", { exact: true }).waitFor();
+    await goto("/vendedor/nova-proposta?produto=p1");
+    await page.getByLabel("Cliente fictício").fill("Cliente Loja");
+    await page
+      .getByRole("button", { name: "+ Adicionar produto", exact: true })
+      .click();
+    await page.getByLabel("Produto 2", { exact: true }).selectOption("p3");
+    await page.getByLabel("Quantidade do produto 2", { exact: true }).fill("2");
+    await page.getByLabel("Desconto (%)", { exact: true }).fill("5");
+    await page
+      .getByRole("button", { name: "Criar proposta", exact: true })
+      .click();
+    await page.getByText("Cliente Loja", { exact: true }).waitFor();
+    const physicalId = await page.evaluate(() => {
+      const state = JSON.parse(localStorage.getItem("gift-store-demo-v1"));
+      state.cart = [
+        {
+          key: "preserved",
+          productId: "p5",
+          quantity: 1,
+          option: "Madeira natural",
+          message: "",
+        },
+      ];
+      localStorage.setItem("gift-store-demo-v1", JSON.stringify(state));
+      return state.proposals[0].id;
+    });
+    await goto("/oferta/" + physicalId);
+    await page.getByRole("radio", { name: /Concluir na loja/ }).check();
+    assert.equal(
+      await page
+        .getByRole("button", {
+          name: "Registrar venda presencial",
+          exact: true,
+        })
+        .isDisabled(),
+      true,
+    );
+    await page
+      .getByLabel("Forma de pagamento na loja", { exact: true })
+      .selectOption("Dinheiro");
+    await page
+      .getByRole("checkbox", { name: /Confirmo a simulação do pagamento/ })
+      .check();
+    await page
+      .getByRole("button", { name: "Registrar venda presencial", exact: true })
+      .click();
+    await page
+      .getByText("Esta oferta já foi utilizada.", { exact: true })
+      .waitFor();
+    const physicalState = await page.evaluate(() =>
+      JSON.parse(localStorage.getItem("gift-store-demo-v1")),
+    );
+    assert.equal(physicalState.orders[0].channel, "presencial");
+    assert.equal(physicalState.orders[0].seller, "Vendedor Demo");
+    assert.equal(physicalState.orders[0].total, 284.71);
+    assert.equal(physicalState.orders[0].payment, "Dinheiro");
+    assert.equal(physicalState.orders[0].status, "Entregue");
+    assert.equal(physicalState.cart[0].key, "preserved");
+    await goto("/checkout?oferta=" + physicalId);
+    await page
+      .getByRole("heading", {
+        name: "Esta oferta não está disponível para compra.",
+        exact: true,
+      })
+      .waitFor();
     await goto("/admin/estoque");
-    assert.equal(await page.getByLabel("Estoque de Kit Pequenas Alegrias").inputValue(), "10");
+    assert.equal(
+      await page.getByLabel("Estoque de Kit Pequenas Alegrias").inputValue(),
+      "9",
+    );
     assert.equal(
       await page
         .getByLabel("Estoque de Caixa de Chocolates Afeto")
         .inputValue(),
-      "18",
+      "16",
     );
     await page.getByLabel("Estoque de Caixa de Chocolates Afeto").fill("0");
     await goto("/produto/chocolates-afeto");

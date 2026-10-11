@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { OfferActions } from "./offer-actions";
 import { AdminCoupons } from "./admin-coupons";
 import { ProductEditor } from "./product-editor";
 import { Finance } from "./finance";
@@ -211,34 +212,7 @@ export function Operations({ path }: { path: string }) {
             <p className="fine-print">
               Oferta demonstrativa. Não há cobrança ou reserva de estoque.
             </p>
-            <button
-              className="button"
-              disabled={
-                proposal.status !== "Aprovada" ||
-                !proposalStockValid(lines, state.products)
-              }
-              onClick={() => {
-                if (!proposalStockValid(lines, state.products)) {
-                  notify("Estoque insuficiente para esta oferta.");
-                  return;
-                }
-                update((s) => ({
-                  ...s,
-                  cart: lines.map((item, index) => ({
-                    key: proposal.id + "-" + index,
-                    productId: item.productId,
-                    quantity: item.quantity,
-                    option:
-                      state.products.find((p) => p.id === item.productId)
-                        ?.options?.[0] || "",
-                    message: "",
-                  })),
-                }));
-                router.push("/checkout?oferta=" + proposal.id);
-              }}
-            >
-              Usar esta oferta <Icon name="arrow" size={16} />
-            </button>
+            <OfferActions key={proposal.id} proposal={proposal} />
           </div>
         </div>
       </div>
@@ -411,7 +385,10 @@ export function Operations({ path }: { path: string }) {
                   </li>
                   <li>Até 10% de desconto: aprovação automática.</li>
                   <li>Acima de 10%: aprovação pelo administrador.</li>
-                  <li>Abra o link da oferta e simule um pedido.</li>
+                  <li>
+                    Use a oferta para comprar online ou concluir a venda na
+                    loja.
+                  </li>
                 </ol>
               ) : (
                 <>
@@ -606,6 +583,7 @@ export function Operations({ path }: { path: string }) {
                 {
                   id,
                   customer,
+                  seller: "Vendedor Demo",
                   items: items.map((item) => ({ ...item })),
                   discount,
                   status: discount > 10 ? "Aguardando aprovação" : "Aprovada",
@@ -894,7 +872,15 @@ export function Operations({ path }: { path: string }) {
                           {new Date(o.createdAt).toLocaleDateString("pt-BR")}
                         </small>
                       </td>
-                      <td>{o.customer}</td>
+                      <td>
+                        {o.customer}
+                        <small>
+                          {o.channel === "presencial"
+                            ? "Venda presencial"
+                            : "Compra online"}
+                          {o.seller ? " · " + o.seller : ""}
+                        </small>
+                      </td>
                       <td>{money(o.total)}</td>
                       <td>
                         {o.payment}
