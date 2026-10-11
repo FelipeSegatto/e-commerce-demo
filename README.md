@@ -1,6 +1,6 @@
 # Gift Store
 
-Demo navegável de uma loja de presentes em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca, textos e catálogo fictícios, sem itens religiosos. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
+Demo navegável de uma loja de presentes em **Next.js 16, React 19, TypeScript e Tailwind CSS 4**. Marca, textos e catálogo fictícios. As fotografias de presentes foram reutilizadas da referência com autorização; a arte ilustrada é local.
 
 ## Executar
 
