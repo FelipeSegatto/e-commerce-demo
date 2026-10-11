@@ -99,3 +99,9 @@ A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização 
 O banner editorial depois da seleção principal usa o texto “Os melhores presentes começam com quem importa” e leva ao catálogo filtrado por Agradecimento. A foto fica ao lado do texto no desktop e acima dele no celular, sempre inteira, sem texto sobre os rostos.
 
 O banner utiliza a foto original `public/photos/friends-fun.jpg`, enviada pelo usuário. Também aceita `banner-amigos.jpg`, `.webp` ou `.png` como alternativa. A versão com a foto original foi verificada no desktop e no celular, incluindo o link para a seleção por Agradecimento.
+
+## Desenvolvimento pela rede local
+
+A configuração permite o endereço `192.168.1.3` em `allowedDevOrigins`, para abrir a aplicação pelo IP do computador sem bloquear recursos de desenvolvimento e o WebSocket de HMR. Se o IP mudar, atualize essa entrada com o novo hostname, sem protocolo nem porta. Reinicie o servidor após mudar `next.config.ts`.
+
+`turbopack.root` aponta para o diretório do projeto iniciado por `npm run dev`, evitando que outros lockfiles em diretórios superiores sejam usados como raiz. Para testar no próprio computador, `http://localhost:3000/catalogo` continua disponível. Os filtros operam no catálogo local e não precisam de backend.
