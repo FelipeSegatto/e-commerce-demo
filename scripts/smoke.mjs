@@ -121,12 +121,14 @@ import assert from "node:assert/strict";
     await page.getByRole("link", { name: "Sacola com 1 itens" }).waitFor();
     await goto("/sacola");
     await page.getByRole("button", { name: "Remover", exact: true }).click();
-    await page.getByRole("link", { name: "Admin", exact: true }).click();
+    await page.locator(".mode-switcher summary").click();
+    await page.getByRole("button", { name: /Administrador/ }).click();
     await page
       .getByRole("heading", { name: "Visão geral", exact: true })
       .waitFor();
     await page.waitForURL("**/admin");
-    await page.getByRole("link", { name: "Vendedor", exact: true }).click();
+    await page.locator(".mode-switcher summary").click();
+    await page.getByRole("button", { name: /Vendedor/ }).click();
     await page
       .getByRole("heading", { name: "Visão geral", exact: true })
       .waitFor();
@@ -311,10 +313,10 @@ import assert from "node:assert/strict";
     await touch.locator("#gift-mega-panel").waitFor();
     await touch.getByRole("button", { name: "Fechar mega menu" }).tap();
     await touch.locator("#gift-mega-panel").waitFor({ state: "detached" });
-    await touch.locator(".profiles-menu summary").tap();
+    await touch.locator(".mode-switcher summary").tap();
     await touch
-      .locator(".profiles-menu")
-      .getByRole("link", { name: "Administrador", exact: true })
+      .locator(".mode-switcher")
+      .getByRole("button", { name: /Administrador/ })
       .tap();
     await touch.waitForURL("**/admin");
     await touch.close();

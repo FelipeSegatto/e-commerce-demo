@@ -1,9 +1,10 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { demoRepository, freshState } from "@/services/demo";
 import { SmartSearch } from "./smart-search";
+import { ModeSwitcher } from "./mode-switcher";
 import { MegaMenu } from "./mega-menu";
 import type { CartItem, DemoState } from "@/domain/types";
 
@@ -147,9 +148,8 @@ export function Icon({ name, size = 20 }: { name: string; size?: number }) {
   );
 }
 export function Shell({ children }: { children: React.ReactNode }) {
-  const { state, update, notify } = useDemo();
+  const { state } = useDemo();
   const path = usePathname();
-  const router = useRouter();
   const [menu, setMenu] = useState(false);
   const workspace = path.startsWith("/admin")
     ? "admin"
@@ -246,38 +246,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </Link>
               <SmartSearch />
               <div className="header-actions">
-                <details className="profiles-menu">
-                  <summary>
-                    Perfis da demo <span aria-hidden="true">⌄</span>
-                  </summary>
-                  <div>
-                    <p>Explore a operação</p>
-                    <Link
-                      href="/admin"
-                      onClick={(e) =>
-                        e.currentTarget
-                          .closest("details")
-                          ?.removeAttribute("open")
-                      }
-                    >
-                      <Icon name="chart" size={17} />
-                      Administrador
-                      <Icon name="arrow" size={14} />
-                    </Link>
-                    <Link
-                      href="/vendedor"
-                      onClick={(e) =>
-                        e.currentTarget
-                          .closest("details")
-                          ?.removeAttribute("open")
-                      }
-                    >
-                      <Icon name="user" size={17} />
-                      Vendedor
-                      <Icon name="arrow" size={14} />
-                    </Link>
-                  </div>
-                </details>
                 <Link href="/favoritos" aria-label="Favoritos">
                   <Icon name="heart" />
                 </Link>
@@ -306,8 +274,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
                 <Link href="/cupons">Cupons por tema</Link>
                 <Link href="/presentear">Assistente de presentes</Link>
                 <Link href="/personalizados">Personalizados</Link>
-                <Link href="/admin">Administrador</Link>
-                <Link href="/vendedor">Vendedor</Link>
               </nav>
             )}
           </header>
@@ -340,8 +306,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </div>
               <div>
                 <h4>Feito para demonstrar</h4>
-                <Link href="/admin">Painel do administrador</Link>
-                <Link href="/vendedor">Painel do vendedor</Link>
+                <p>
+                  Explore Loja, Admin e Vendedor no seletor de modos, no canto
+                  inferior.
+                </p>
                 <p>
                   Marca e catálogo fictícios.
                   <br />
@@ -359,62 +327,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </footer>
         </>
       )}
-      <div className="demo-toolbar">
-        <Link
-          className={workspace === "admin" ? "current-profile" : ""}
-          href="/admin"
-        >
-          Admin
-        </Link>
-        <Link
-          className={workspace === "vendedor" ? "current-profile" : ""}
-          href="/vendedor"
-        >
-          Vendedor
-        </Link>
-        <span>
-          <b>DEMO</b>
-          <span className="toolbar-note"> Explore os perfis</span>
-        </span>
-        <select
-          aria-label="Perfil da demonstração"
-          value={workspace || (state.session ? "cliente" : "visitante")}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v === "cliente")
-              update((s) => ({ ...s, session: "Cliente Demo" }));
-            else if (v === "visitante")
-              update((s) => ({ ...s, session: null }));
-            router.push(
-              v === "admin" || v === "vendedor"
-                ? "/" + v
-                : v === "cliente"
-                  ? "/conta"
-                  : "/",
-            );
-          }}
-        >
-          <option value="visitante">Visitante</option>
-          <option value="cliente">Cliente</option>
-          <option value="vendedor">Vendedor</option>
-          <option value="admin">Administrador</option>
-        </select>
-        <button
-          onClick={() => {
-            if (
-              window.confirm(
-                "Reiniciar sacola, pedidos e alterações desta demonstração?",
-              )
-            ) {
-              update(() => demoRepository.reset());
-              notify("Demonstração reiniciada.");
-              router.push("/");
-            }
-          }}
-        >
-          Reiniciar
-        </button>
-      </div>
+      <ModeSwitcher />
     </>
   );
 }

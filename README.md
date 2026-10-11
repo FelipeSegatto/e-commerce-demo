@@ -28,7 +28,7 @@ No ambiente cloud, use `NPM_CONFIG_CACHE=/workspace/.npm-cache` se o diretório 
 - Administrador: indicadores, produtos e cadastro, ajuste de estoque, pedidos e atualização de status, resumo financeiro, equipe e aprovação de descontos.
 - Institucional: sobre, contato simulado, entrega/trocas/privacidade.
 
-Use o seletor fixo **DEMO** para alternar os perfis e reiniciar os dados. Há também links diretos **Admin** e **Vendedor** na barra, no menu **Perfis da demo** do cabeçalho e no rodapé. Os painéis podem ser acessados diretamente em `/admin` e `/vendedor`, sem login real. Para testar o fluxo assistido: crie uma proposta no vendedor, aprove o desconto no administrador se necessário, abra a oferta e conclua o checkout. A proposta será convertida, o pedido aparecerá no painel e o estoque será reduzido.
+Use o seletor fixo **Explorar demo**, no canto inferior, como ponto único de troca entre Loja, Administrador e Vendedor. Ele identifica o modo atual, descreve cada perspectiva e permite reiniciar os dados. Fecha por Escape ou clique fora e funciona por teclado e toque. Os painéis podem ser acessados diretamente em `/admin` e `/vendedor`, sem login real. Para testar o fluxo assistido: crie uma proposta no vendedor, aprove o desconto no administrador se necessário, abra a oferta e conclua o checkout. A proposta será convertida, o pedido aparecerá no painel e o estoque será reduzido.
 
 ## Limites da demonstração
 
@@ -81,3 +81,9 @@ A busca aceita palavras sem acentos e sugere produtos por nome, marca e ocasião
 Cupons aplicam desconto somente nos produtos elegíveis, respeitam valor mínimo e limite de desconto, excluem o frete e não acumulam com propostas de vendedor. GIFT10 vale apenas para o primeiro pedido neste navegador. Checkout registra código e desconto no pedido.
 
 Novos catálogos migram o estado local preservando estoque existente, pedidos, favoritos, sacola e produtos cadastrados. Fotos e variantes estão vinculadas em `src/data/catalog-images.json`; `src/data/image-import-manifest.json` documenta cada vínculo.
+
+## Vitrines da home
+
+A home apresenta 24 produtos em quatro formatos: seleção principal com oito cards, composição editorial para casa com quatro peças, uma prateleira de seis presentes até R$ 75 e outra com seis itens de autocuidado. Fotos de todos os banners são distintas. As prateleiras permitem navegar por rolagem, teclado, toque e botões direcionais. Os links abrem detalhes dos produtos ou o catálogo com os filtros da coleção.
+
+`CHROMIUM_PATH=/usr/bin/chromium npm run test:home` verifica a curadoria, imagens distintas, prateleiras, troca de modos, fechamento do seletor e layouts em 320, 390 e 768 pixels.

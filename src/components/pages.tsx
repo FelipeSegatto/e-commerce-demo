@@ -9,6 +9,7 @@ import { ProductCard } from "./product-card";
 import { ProductImage } from "./product-image";
 import { Catalog } from "./catalog";
 import { CouponSection } from "./coupons";
+import { HomeMerchandising } from "./home-merchandising";
 import { Discovery } from "./discovery";
 import { evaluateCoupon } from "@/services/coupons";
 import { Operations } from "./operations";
@@ -114,8 +115,8 @@ function Home() {
         </div>
         <div className="offers-visual">
           <img
-            src="/photos/gift-basket.jpg"
-            alt="Cesta de chocolates em oferta"
+            src="/photos/cesta-giftstore-2.jpg"
+            alt="Composição gourmet com vinho e chocolates"
           />
           <span>
             ATÉ <b>{biggestDiscount}%</b> OFF
@@ -152,22 +153,9 @@ function Home() {
           ))}
         </div>
       </section>
-      <section className="section container">
-        <div className="section-heading">
-          <div>
-            <p className="eyebrow">A NOSSA SELEÇÃO</p>
-            <h2>Presentes que dizem muito</h2>
-          </div>
-          <Link className="text-link" href="/catalogo">
-            Ver todos <Icon name="arrow" size={16} />
-          </Link>
-        </div>
-        <div className="product-grid">
-          {state.products.slice(0, 4).map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
-        </div>
-      </section>
+      <HomeMerchandising section="selection" />
+      <HomeMerchandising section="home" />
+      <HomeMerchandising section="budget" />
       <section className="personal-banner container">
         <div className="personal-art">
           <img
@@ -193,6 +181,7 @@ function Home() {
         </div>
       </section>
       <Discovery />
+      <HomeMerchandising section="rituals" />
       <CouponSection compact />
       <section className="section container manifesto">
         <p className="eyebrow">MAIS DO QUE COISAS, CONEXÕES</p>
