@@ -4022,3 +4022,78 @@ footer {
     transition: none;
   }
 }
+
+.friendship-banner {
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  padding: 0;
+  margin-top: 30px;
+  margin-bottom: 50px;
+  background: #ecddcd;
+  overflow: hidden;
+}
+.friendship-copy {
+  padding: 45px 40px;
+  align-self: center;
+}
+.friendship-copy .eyebrow {
+  color: #8f684c;
+}
+.friendship-copy h2 {
+  font:
+    37px/1.14 Georgia,
+    serif;
+  color: #43382e;
+  margin: 18px 0;
+}
+.friendship-copy h2 em {
+  color: #a26348;
+  font-weight: 400;
+}
+.friendship-copy > p:not(.eyebrow) {
+  color: #75604e;
+  font-size: 13px;
+  line-height: 1.9;
+  max-width: 315px;
+  margin-bottom: 24px;
+}
+.friendship-copy .button {
+  font-size: 11px;
+  gap: 20px;
+}
+.friendship-photo {
+  display: flex;
+  align-items: center;
+  background: #c8997f;
+}
+.friendship-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+@media (max-width: 1000px) {
+  .friendship-copy {
+    padding: 32px 28px;
+  }
+  .friendship-copy h2 {
+    font-size: 30px;
+  }
+}
+@media (max-width: 700px) {
+  .friendship-banner {
+    grid-template-columns: 1fr;
+  }
+  .friendship-photo {
+    grid-row: 1;
+  }
+  .friendship-copy {
+    padding: 30px 25px 35px;
+  }
+  .friendship-copy h2 {
+    font-size: 34px;
+  }
+  .friendship-copy > p:not(.eyebrow) {
+    max-width: 100%;
+  }
+}
