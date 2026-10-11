@@ -3,9 +3,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { budgets, filtersQuery, defaults } from "@/services/browse";
 import { occasions } from "@/services/catalog";
-import { coupons } from "@/services/coupons";
-import { Icon } from "./demo-provider";
+import { Icon, useDemo } from "./demo-provider";
 export function Discovery({ full = false }: { full?: boolean }) {
+  const { state } = useDemo();
+  const coupons = state.coupons.filter((c) => c.active !== false);
   const [occasion, setOccasion] = useState("Todas");
   const [budget, setBudget] = useState("75a150");
   const range = budgets.find((b) => b.id === budget)!;
@@ -77,16 +78,18 @@ export function Discovery({ full = false }: { full?: boolean }) {
         <div className="theme-navigation">
           <h2>Ou comece pelo sentimento.</h2>
           <div>
-            {coupons.slice(1).map((c) => (
-              <Link href={"/catalogo?tema=" + c.theme} key={c.theme}>
-                <span className="eyebrow">
-                  {c.percent}% COM {c.code}
-                </span>
-                <h3>{c.title}</h3>
-                <p>{c.description}</p>
-                <Icon name="arrow" size={18} />
-              </Link>
-            ))}
+            {coupons
+              .filter((c) => !c.firstOrderOnly)
+              .map((c) => (
+                <Link href={"/catalogo?tema=" + c.theme} key={c.theme}>
+                  <span className="eyebrow">
+                    {c.percent}% COM {c.code}
+                  </span>
+                  <h3>{c.title}</h3>
+                  <p>{c.description}</p>
+                  <Icon name="arrow" size={18} />
+                </Link>
+              ))}
           </div>
         </div>
       )}

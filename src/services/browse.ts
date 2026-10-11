@@ -1,6 +1,6 @@
 import type { Product } from "@/domain/types";
 import { productOccasions } from "./catalog";
-import { coupons } from "./coupons";
+import { coupons, type Coupon } from "./coupons";
 export type Filters = {
   category: string;
   subcategory: string;
@@ -107,8 +107,12 @@ export function filtersQuery(filters: Filters): string {
       );
   return query.toString();
 }
-export function matchesFilters(p: Product, f: Filters): boolean {
-  const campaign = coupons.find((c) => c.theme === f.theme);
+export function matchesFilters(
+  p: Product,
+  f: Filters,
+  campaigns: Coupon[] = coupons,
+): boolean {
+  const campaign = campaigns.find((c) => c.theme === f.theme);
   const terms = normalizeText(f.search.trim()).split(/\s+/).filter(Boolean);
   const haystack = normalizeText(
     [
@@ -127,6 +131,7 @@ export function matchesFilters(p: Product, f: Filters): boolean {
     (f.color === "Todas" || p.color === f.color) &&
     (f.material === "Todos" || p.material === f.material) &&
     (f.occasion === "Todas" || productOccasions(p).includes(f.occasion)) &&
+    campaign?.active !== false &&
     (!campaign ||
       !campaign.categories.length ||
       campaign.categories.includes(p.category)) &&
@@ -141,9 +146,10 @@ export function matchesFilters(p: Product, f: Filters): boolean {
 export function browseProducts(
   products: Product[],
   filters: Filters,
+  campaigns: Coupon[] = coupons,
 ): Product[] {
   return products
-    .filter((p) => matchesFilters(p, filters))
+    .filter((p) => matchesFilters(p, filters, campaigns))
     .sort((a, b) =>
       filters.sort === "asc"
         ? a.price - b.price
@@ -162,7 +168,9 @@ export function facetCount(
   filters: Filters,
   key: keyof Filters,
   value: string,
+  campaigns: Coupon[] = coupons,
 ): number {
-  return products.filter((p) => matchesFilters(p, { ...filters, [key]: value }))
-    .length;
+  return products.filter((p) =>
+    matchesFilters(p, { ...filters, [key]: value }, campaigns),
+  ).length;
 }

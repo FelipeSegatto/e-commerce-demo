@@ -1,10 +1,10 @@
 "use client";
 import Link from "next/link";
-import { coupons } from "@/services/coupons";
 import { money } from "@/services/catalog";
 import { useDemo, Icon } from "./demo-provider";
 export function CouponSection({ compact = false }: { compact?: boolean }) {
-  const { notify } = useDemo();
+  const { notify, state } = useDemo();
+  const coupons = state.coupons.filter((c) => c.active !== false);
   return (
     <section
       className={
@@ -32,7 +32,10 @@ export function CouponSection({ compact = false }: { compact?: boolean }) {
         )}
       </div>
       <div className="coupon-grid">
-        {(compact ? coupons.slice(1, 4) : coupons).map((c) => (
+        {(compact
+          ? coupons.filter((c) => !c.firstOrderOnly).slice(0, 3)
+          : coupons
+        ).map((c) => (
           <article className={"campaign-card " + c.color} key={c.code}>
             <div>
               <p className="eyebrow">
@@ -46,7 +49,9 @@ export function CouponSection({ compact = false }: { compact?: boolean }) {
                         ? "CELEBRAÇÃO"
                         : c.theme === "afeto"
                           ? "AMOR & CARINHO"
-                          : "GOURMET"}
+                          : c.theme === "gourmet"
+                            ? "GOURMET"
+                            : "SELEÇÃO ESPECIAL"}
               </p>
               <h3>{c.title}</h3>
               <p>{c.description}</p>

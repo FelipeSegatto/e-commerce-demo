@@ -1,8 +1,13 @@
 import type { Order } from "@/domain/types";
 
-const businessDateKey = (value: string | number) => new Intl.DateTimeFormat("en-CA", {
-  timeZone: "America/Sao_Paulo", year: "numeric", month: "2-digit", day: "2-digit",
-}).format(new Date(value));
+const businessDateFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Sao_Paulo",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+const businessDateKey = (value: string | number) =>
+  businessDateFormatter.format(new Date(value));
 
 export function financialSummary(orders: Order[], period: string, now: number) {
   const selected = orders.filter((order) => {
@@ -132,7 +137,10 @@ export function salesTimeline(orders: Order[], range: string, now: number) {
     1,
   );
   const selected = orders.filter(
-    (o) => businessDateKey(o.createdAt) >= new Date(start).toISOString().slice(0, 10) && Date.parse(o.createdAt) <= now,
+    (o) =>
+      businessDateKey(o.createdAt) >=
+        new Date(start).toISOString().slice(0, 10) &&
+      Date.parse(o.createdAt) <= now,
   );
   const points = Array.from(
     { length: range === "month" ? today.getUTCDate() : months },
@@ -150,7 +158,9 @@ export function salesTimeline(orders: Order[], range: string, now: number) {
               ),
             );
       const key = date.toISOString().slice(0, range === "month" ? 10 : 7);
-      const entries = selected.filter((o) => businessDateKey(o.createdAt).startsWith(key));
+      const entries = selected.filter((o) =>
+        businessDateKey(o.createdAt).startsWith(key),
+      );
       return {
         key,
         label:

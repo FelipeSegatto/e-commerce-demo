@@ -1,5 +1,6 @@
 import type { CartItem, Category, Product } from "@/domain/types";
 export type Coupon = {
+  active?: boolean;
   code: string;
   theme: string;
   title: string;
@@ -92,9 +93,10 @@ export function evaluateCoupon(
   cart: CartItem[],
   products: Product[],
   orderCount = 0,
+  availableCoupons: Coupon[] = coupons,
 ): CouponResult {
   const coupon =
-    coupons.find((c) => c.code === code.trim().toUpperCase()) || null;
+    availableCoupons.find((c) => c.code === code.trim().toUpperCase()) || null;
   const result: CouponResult = {
     valid: false,
     coupon,
@@ -103,10 +105,12 @@ export function evaluateCoupon(
     message: "Cupom não encontrado.",
   };
   if (!coupon) return result;
+  if (coupon.active === false)
+    return { ...result, message: "Este cupom está pausado." };
   if (coupon.firstOrderOnly && orderCount > 0)
     return {
       ...result,
-      message: "GIFT10 é válido apenas para o primeiro pedido demonstrativo.",
+      message: `${coupon.code} é válido apenas para o primeiro pedido demonstrativo.`,
     };
   const eligibleSubtotal = cart.reduce((sum, item) => {
     const p = products.find((p) => p.id === item.productId);

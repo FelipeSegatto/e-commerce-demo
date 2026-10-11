@@ -14,7 +14,6 @@ import {
   MAX_PRICE,
   type Filters,
 } from "@/services/browse";
-import { coupons } from "@/services/coupons";
 
 export function Catalog({
   favorites = false,
@@ -24,6 +23,7 @@ export function Catalog({
   custom?: boolean;
 }) {
   const { state } = useDemo();
+  const coupons = state.coupons.filter((c) => c.active !== false);
   const path = usePathname();
   const params = useSearchParams();
   const filters = parseFilters(new URLSearchParams(params.toString()));
@@ -32,7 +32,7 @@ export function Catalog({
       (!favorites || state.favorites.includes(p.id)) &&
       (!custom || p.customizable),
   );
-  const products = browseProducts(source, filters);
+  const products = browseProducts(source, filters, state.coupons);
   const theme = coupons.find((c) => c.theme === filters.theme);
   const update = (change: Partial<Filters>) => {
     const next = {
@@ -76,7 +76,7 @@ export function Catalog({
           ]),
         ).map((value) => (
           <option key={value} value={value}>
-            {value} ({facetCount(source, filters, key, value)})
+            {value} ({facetCount(source, filters, key, value, state.coupons)})
           </option>
         ))}
       </select>

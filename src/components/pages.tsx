@@ -34,6 +34,9 @@ export function PageTitle({
 }
 function Home({ banner }: { banner?: React.ReactNode }) {
   const { state } = useDemo();
+  const featuredCoupon =
+    state.coupons.find((c) => c.active !== false && c.firstOrderOnly) ||
+    state.coupons.find((c) => c.active !== false);
   const biggestDiscount = Math.max(
     0,
     ...state.products.map((p) =>
@@ -125,9 +128,17 @@ function Home({ banner }: { banner?: React.ReactNode }) {
         </div>
         <div className="offers-coupon">
           <Icon name="gift" size={28} />
-          <span>PRIMEIRA COMPRA?</span>
-          <b>GIFT10</b>
-          <p>10% de desconto no checkout</p>
+          <span>
+            {featuredCoupon?.firstOrderOnly
+              ? "PRIMEIRA COMPRA?"
+              : "UM CARINHO A MAIS"}
+          </span>
+          <b>{featuredCoupon?.code || "PRESENTEIE"}</b>
+          <p>
+            {featuredCoupon
+              ? `${featuredCoupon.percent}% nos produtos elegíveis`
+              : "Explore a seleção de presentes"}
+          </p>
           <small>Demo · Não cumulativo com ofertas de vendedor</small>
         </div>
       </section>
@@ -370,6 +381,7 @@ function Cart() {
     state.cart,
     state.products,
     state.orders.length,
+    state.coupons,
   );
   const subtotal = state.cart.reduce(
     (n, i) =>
@@ -480,6 +492,7 @@ function Cart() {
                 state.cart,
                 state.products,
                 state.orders.length,
+                state.coupons,
               );
               setAppliedCoupon(result.valid ? result.coupon!.code : "");
               notify(result.message);
@@ -573,6 +586,7 @@ function Checkout() {
     state.cart,
     state.products,
     state.orders.length,
+    state.coupons,
   );
   const discountAmount = validProposal
     ? Math.round(subtotal * proposal.discount) / 100

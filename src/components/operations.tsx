@@ -3,6 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { AdminCoupons } from "./admin-coupons";
+import { ProductEditor } from "./product-editor";
 import { Finance } from "./finance";
 import { ProductImage } from "./product-image";
 import { useDemo, Icon } from "./demo-provider";
@@ -15,12 +17,13 @@ import {
 import type { ProposalItem, Order, Product } from "@/domain/types";
 
 const labels: Record<string, string> = {
-  produtos: "Produtos",
-  estoque: "Estoque",
+  produtos: "Produtos e estoque",
+  estoque: "Produtos e estoque",
   pedidos: "Pedidos",
   financeiro: "Financeiro",
   equipe: "Equipe",
   descontos: "Aprovação de descontos",
+  cupons: "Cupons e campanhas",
   catalogo: "Catálogo de presentes",
   propostas: "Minhas propostas",
   "nova-proposta": "Criar proposta",
@@ -33,6 +36,8 @@ export function Operations({ path }: { path: string }) {
   const [now] = useState(() => Date.now());
   const seller = path.startsWith("/vendedor");
   const page = path.split("/")[2] || "dashboard";
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [stockFilter, setStockFilter] = useState("Todos");
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Todos");
   const [items, setItems] = useState<ProposalItem[]>([
@@ -62,7 +67,13 @@ export function Operations({ path }: { path: string }) {
   const filteredProducts = state.products.filter(
     (p) =>
       p.name.toLowerCase().includes(search.toLowerCase()) &&
-      (filter === "Todos" || p.category === filter),
+      (filter === "Todos" || p.category === filter) &&
+      (stockFilter === "Todos" ||
+        (stockFilter === "Disponível"
+          ? p.stock > 0
+          : stockFilter === "Baixo estoque"
+            ? p.stock > 0 && p.stock <= 5
+            : p.stock === 0)),
   );
   const tableProducts = (inventory = false) => (
     <div className="table-scroll">
@@ -73,7 +84,7 @@ export function Operations({ path }: { path: string }) {
             <th>Categoria</th>
             <th>Preço</th>
             <th>Estoque</th>
-            <th>{inventory ? "Ajuste local" : "Ação"}</th>
+            <th>Ações</th>
           </tr>
         </thead>
         <tbody>
@@ -94,9 +105,7 @@ export function Operations({ path }: { path: string }) {
                 <span className={"badge " + (p.stock <= 5 ? "warning" : "")}>
                   {p.stock} unidades
                 </span>
-              </td>
-              <td>
-                {inventory ? (
+                {inventory && (
                   <input
                     aria-label={`Estoque de ${p.name}`}
                     className="stock-input"
@@ -105,7 +114,10 @@ export function Operations({ path }: { path: string }) {
                     max="9999"
                     value={p.stock}
                     onChange={(e) => {
-                      const stock = Math.max(0, Number(e.target.value) || 0);
+                      const stock = Math.min(
+                        9999,
+                        Math.max(0, Math.floor(Number(e.target.value) || 0)),
+                      );
                       update((s) => ({
                         ...s,
                         products: s.products.map((i) =>
@@ -114,11 +126,24 @@ export function Operations({ path }: { path: string }) {
                       }));
                     }}
                   />
-                ) : (
+                )}
+              </td>
+              <td className="product-management-actions">
+                {!seller && (
+                  <button
+                    type="button"
+                    className="text-link"
+                    aria-label={"Editar " + p.name}
+                    onClick={() => setEditingProduct(p)}
+                  >
+                    Editar produto
+                  </button>
+                )}
+                {
                   <Link className="text-link" href={"/produto/" + p.slug}>
                     Ver produto ↗
                   </Link>
-                )}
+                }
               </td>
             </tr>
           ))}
@@ -222,6 +247,12 @@ export function Operations({ path }: { path: string }) {
   const base = seller ? "/vendedor" : "/admin";
   return (
     <div className="operations-content">
+      {!seller && editingProduct && (
+        <ProductEditor
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
+        />
+      )}
       <div className="operations-heading">
         <div>
           <p className="eyebrow">
@@ -245,7 +276,7 @@ export function Operations({ path }: { path: string }) {
             <option value="90">Últimos 90 dias</option>
           </select>
         )}
-        {page === "produtos" && (
+        {["produtos", "estoque"].includes(page) && (
           <Link className="button" href="/admin/novo-produto">
             + Novo produto
           </Link>
@@ -375,7 +406,9 @@ export function Operations({ path }: { path: string }) {
               <h2>{seller ? "Como funciona" : "Precisa de atenção"}</h2>
               {seller ? (
                 <ol className="workflow-list">
-                  <li>Escolha um produto e um cliente fictício.</li>
+                  <li>
+                    Monte uma seleção de produtos para o cliente fictício.
+                  </li>
                   <li>Até 10% de desconto: aprovação automática.</li>
                   <li>Acima de 10%: aprovação pelo administrador.</li>
                   <li>Abra o link da oferta e simule um pedido.</li>
@@ -388,7 +421,7 @@ export function Operations({ path }: { path: string }) {
                       <b>{p.stock} un.</b>
                     </div>
                   ))}
-                  <Link className="text-link" href="/admin/estoque">
+                  <Link className="text-link" href="/admin/produtos">
                     Gerenciar estoque →
                   </Link>
                   <p>{pending.length} desconto(s) aguardando aprovação.</p>
@@ -416,6 +449,19 @@ export function Operations({ path }: { path: string }) {
                 <option key={c}>{c}</option>
               ))}
             </select>
+            {!seller && (
+              <select
+                aria-label="Filtrar estoque"
+                value={stockFilter}
+                onChange={(e) => setStockFilter(e.target.value)}
+              >
+                {["Todos", "Disponível", "Baixo estoque", "Sem estoque"].map(
+                  (option) => (
+                    <option key={option}>{option}</option>
+                  ),
+                )}
+              </select>
+            )}
           </div>
           <section className="panel">
             {page === "catalogo" ? (
@@ -437,9 +483,9 @@ export function Operations({ path }: { path: string }) {
                 ))}
               </div>
             ) : (
-              tableProducts(page === "estoque")
+              tableProducts(!seller)
             )}
-            {page === "estoque" && (
+            {!seller && (
               <p className="fine-print">
                 Ajustes salvos automaticamente apenas neste navegador. Não há
                 reserva de estoque no backend.
@@ -900,6 +946,7 @@ export function Operations({ path }: { path: string }) {
           )}
         </section>
       )}
+      {page === "cupons" && !seller && <AdminCoupons />}
       {page === "financeiro" && (
         <Finance orders={state.orders} products={state.products} now={now} />
       )}
@@ -956,6 +1003,7 @@ export function Operations({ path }: { path: string }) {
         "descontos",
         "pedidos",
         "financeiro",
+        "cupons",
         "equipe",
       ].includes(page) && (
         <Link className="button" href={base}>

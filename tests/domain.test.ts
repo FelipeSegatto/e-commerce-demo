@@ -304,3 +304,51 @@ test("catalog migration adds products and photos while retaining stock, orders a
   assert.equal(migrated.products.at(-1)?.id, "custom");
   assert.equal(migrateCatalog(migrated), migrated);
 });
+
+test("admin product edits survive future catalog updates and coupon rules drive discovery and checkout", () => {
+  const state = freshState();
+  delete state.catalogRevision;
+  state.products[0] = {
+    ...state.products[0],
+    name: "Kit editado",
+    price: 149.9,
+    stock: 4,
+  };
+  state.editedProductIds = [state.products[0].id];
+  assert.equal(migrateCatalog(state).products[0].name, "Kit editado");
+  assert.equal(migrateCatalog(state).products[0].price, 149.9);
+  const coupon = {
+    ...state.coupons[0],
+    firstOrderOnly: false,
+    percent: 20,
+    cap: 10,
+    categories: ["Casa & decoração" as const],
+  };
+  const product = state.products.find(
+    (p) => p.category === "Casa & decoração",
+  )!;
+  const cart = [
+    { key: "one", productId: product.id, quantity: 1, option: "", message: "" },
+  ];
+  assert.equal(
+    evaluateCoupon(coupon.code, cart, state.products, 2, [coupon]).discount,
+    10,
+  );
+  assert.equal(
+    evaluateCoupon(coupon.code, cart, state.products, 2, [
+      { ...coupon, active: false },
+    ]).valid,
+    false,
+  );
+  const filters = parseFilters(new URLSearchParams("tema=" + coupon.theme));
+  assert.ok(
+    browseProducts(state.products, filters, [coupon]).every(
+      (p) => p.category === "Casa & decoração",
+    ),
+  );
+  assert.equal(
+    browseProducts(state.products, filters, [{ ...coupon, active: false }])
+      .length,
+    0,
+  );
+});

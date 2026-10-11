@@ -157,16 +157,19 @@ export function Shell({ children }: { children: React.ReactNode }) {
       ? "vendedor"
       : null;
   const count = state.cart.reduce((n, i) => n + i.quantity, 0);
+  const featuredCoupon =
+    state.coupons.find((c) => c.active !== false && c.firstOrderOnly) ||
+    state.coupons.find((c) => c.active !== false);
   const nav =
     workspace === "admin"
       ? [
           ["", "Visão geral"],
-          ["produtos", "Produtos"],
-          ["estoque", "Estoque"],
+          ["produtos", "Produtos e estoque"],
           ["pedidos", "Pedidos"],
           ["financeiro", "Financeiro"],
           ["equipe", "Equipe"],
-          ["descontos", "Descontos"],
+          ["descontos", "Ofertas do vendedor"],
+          ["cupons", "Cupons e campanhas"],
         ]
       : [
           ["", "Visão geral"],
@@ -199,7 +202,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
               {nav.map(([slug, label]) => (
                 <Link
                   className={
-                    path === `/${workspace}${slug ? "/" + slug : ""}`
+                    path === `/${workspace}${slug ? "/" + slug : ""}` ||
+                    (workspace === "admin" &&
+                      slug === "produtos" &&
+                      path === "/admin/estoque")
                       ? "active"
                       : ""
                   }
@@ -229,8 +235,17 @@ export function Shell({ children }: { children: React.ReactNode }) {
       ) : (
         <>
           <div className="promo">
-            UM CARINHO A MAIS NA PRIMEIRA COMPRA · <strong>GIFT10</strong> · 10%
-            DE DESCONTO
+            {featuredCoupon ? (
+              <>
+                {featuredCoupon.firstOrderOnly
+                  ? "UM CARINHO A MAIS NA PRIMEIRA COMPRA"
+                  : "UM CARINHO A MAIS PARA PRESENTEAR"}{" "}
+                · <strong>{featuredCoupon.code}</strong> ·{" "}
+                {featuredCoupon.percent}% NOS PRODUTOS ELEGÍVEIS
+              </>
+            ) : (
+              "PEQUENOS GESTOS, GRANDES SENTIMENTOS"
+            )}
           </div>
           <header>
             <div className="header-inner">

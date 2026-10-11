@@ -3,11 +3,12 @@
 /* eslint-disable @next/next/no-html-link-for-pages */
 import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
-import { coupons } from "@/services/coupons";
 import { categories, occasions } from "@/services/catalog";
-import { Icon } from "./demo-provider";
+import { Icon, useDemo } from "./demo-provider";
 
 export function MegaMenu() {
+  const { state } = useDemo();
+  const coupons = state.coupons.filter((c) => c.active !== false);
   const root = useRef<HTMLDivElement>(null);
   const pinned = useRef(false);
   const path = usePathname();
@@ -202,11 +203,13 @@ export function MegaMenu() {
           </div>
           <div className="mega-themes">
             <span>Explore por tema</span>
-            {coupons.slice(1).map((c) => (
-              <a href={"/catalogo?tema=" + c.theme} key={c.theme}>
-                {c.title}
-              </a>
-            ))}
+            {coupons
+              .filter((c) => !c.firstOrderOnly)
+              .map((c) => (
+                <a href={"/catalogo?tema=" + c.theme} key={c.theme}>
+                  {c.title}
+                </a>
+              ))}
             <a className="text-link" href="/presentear">
               Precisa de uma ideia? →
             </a>

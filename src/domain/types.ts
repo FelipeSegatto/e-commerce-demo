@@ -1,3 +1,4 @@
+import type { Coupon } from "@/services/coupons";
 export type Category =
   | "Perfumes"
   | "Chocolates"
@@ -65,6 +66,8 @@ export type Proposal = {
   status: "Aguardando aprovação" | "Aprovada" | "Convertida";
 };
 export type DemoState = {
+  coupons: Coupon[];
+  editedProductIds?: string[];
   catalogRevision?: number;
   cart: CartItem[];
   favorites: string[];
