@@ -29,8 +29,50 @@ async function go(path) {
 }
 try {
   await go("/");
+  const nav = page.getByRole("navigation", { name: "Navegação da loja" });
+  await nav.getByRole("link", { name: "Presentes", exact: true }).click();
+  await page.waitForURL(base + "/catalogo");
+  await nav.getByRole("link", { name: "Por ocasião", exact: true }).click();
+  await page.waitForURL(base + "/presentear");
+  for (const category of [
+    "Perfumes",
+    "Chocolates",
+    "Casa & decoração",
+    "Flores & buquês",
+  ]) {
+    await nav.getByRole("link", { name: category, exact: true }).click();
+    await page.waitForURL(
+      (url) =>
+        url.pathname === "/catalogo" &&
+        url.searchParams.get("categoria") === category,
+    );
+    await page.locator(".catalog-results").waitFor();
+    assert.ok(
+      (await page.locator(".catalog-results").innerText()).includes(category),
+    );
+  }
+  await go("/");
+  const homeCategories = await page
+    .locator(".category-card")
+    .evaluateAll((links) =>
+      links.map((a) => ({
+        name: a.querySelector("span:nth-child(2)").textContent,
+        href: a.getAttribute("href"),
+      })),
+    );
+  for (const category of homeCategories) {
+    await page.locator(`.category-card[href="${category.href}"]`).click();
+    await page.waitForURL(
+      (url) => url.searchParams.get("categoria") === category.name,
+    );
+    await page.locator(".catalog-results").waitFor();
+    await go("/");
+  }
   await collect();
-  const present = page.getByRole("button", { name: "Presentes", exact: false });
+  const present = page.getByRole("button", {
+    name: "Abrir coleções de presentes",
+    exact: false,
+  });
   await present.hover();
   await page.locator("#gift-mega-panel").waitFor();
   await present.click();
@@ -38,7 +80,9 @@ try {
   await collect();
   await present.click();
   await page.locator("#gift-mega-panel").waitFor({ state: "detached" });
-  await page.getByRole("button", { name: "Por ocasião", exact: false }).click();
+  await page
+    .getByRole("button", { name: "Abrir ocasiões", exact: false })
+    .click();
   await collect();
   await page
     .locator("#gift-mega-panel")

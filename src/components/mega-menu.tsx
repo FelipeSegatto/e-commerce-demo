@@ -1,6 +1,7 @@
 "use client";
+// Navigation intentionally loads the destination URL so catalog filters initialize consistently.
+/* eslint-disable @next/next/no-html-link-for-pages */
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { coupons } from "@/services/coupons";
 import { categories, occasions } from "@/services/catalog";
@@ -59,18 +60,25 @@ export function MegaMenu() {
     >
       <nav className="category-nav refined-nav" aria-label="Navegação da loja">
         <div className="nav-collections">
-          <button
-            className="mega-trigger"
-            aria-expanded={open === "presentes"}
-            aria-controls="gift-mega-panel"
-            onMouseEnter={() => {
-              if (!pinned.current && window.matchMedia("(hover:hover)").matches)
-                setOpen("presentes");
-            }}
-            onClick={() => toggle("presentes")}
-          >
-            Presentes <NavChevron />
-          </button>
+          <div className="nav-dropdown">
+            <a href="/catalogo">Presentes</a>
+            <button
+              aria-label="Abrir coleções de presentes"
+              className="mega-trigger"
+              aria-expanded={open === "presentes"}
+              aria-controls="gift-mega-panel"
+              onMouseEnter={() => {
+                if (
+                  !pinned.current &&
+                  window.matchMedia("(hover:hover)").matches
+                )
+                  setOpen("presentes");
+              }}
+              onClick={() => toggle("presentes")}
+            >
+              <NavChevron />
+            </button>
+          </div>
           {categories
             .filter((c) =>
               [
@@ -81,53 +89,56 @@ export function MegaMenu() {
               ].includes(c),
             )
             .map((c) => (
-              <Link
+              <a
                 key={c}
                 href={"/catalogo?categoria=" + encodeURIComponent(c)}
                 onMouseEnter={close}
-                onClick={close}
               >
                 {c}
-              </Link>
+              </a>
             ))}
-          <button
-            className="mega-trigger"
-            aria-expanded={open === "ocasioes"}
-            aria-controls="gift-mega-panel"
-            onMouseEnter={() => {
-              if (!pinned.current && window.matchMedia("(hover:hover)").matches)
-                setOpen("ocasioes");
-            }}
-            onClick={() => toggle("ocasioes")}
-          >
-            Por ocasião <NavChevron />
-          </button>
+          <div className="nav-dropdown">
+            <a href="/presentear">Por ocasião</a>
+            <button
+              aria-label="Abrir ocasiões"
+              className="mega-trigger"
+              aria-expanded={open === "ocasioes"}
+              aria-controls="gift-mega-panel"
+              onMouseEnter={() => {
+                if (
+                  !pinned.current &&
+                  window.matchMedia("(hover:hover)").matches
+                )
+                  setOpen("ocasioes");
+              }}
+              onClick={() => toggle("ocasioes")}
+            >
+              <NavChevron />
+            </button>
+          </div>
         </div>
         <div className="nav-discover">
-          <Link
+          <a
             className="nav-offers"
             href="/catalogo?ofertas=1"
             onMouseEnter={close}
-            onClick={close}
           >
             Ofertas <span className="offer-dot" />
-          </Link>
-          <Link
+          </a>
+          <a
             href="/personalizados"
             aria-current={path === "/personalizados" ? "page" : undefined}
             onMouseEnter={close}
-            onClick={close}
           >
             Personalizados
-          </Link>
-          <Link
+          </a>
+          <a
             href="/cupons"
             aria-current={path === "/cupons" ? "page" : undefined}
             onMouseEnter={close}
-            onClick={close}
           >
             Cupons
-          </Link>
+          </a>
         </div>
       </nav>
       {open && (
@@ -144,15 +155,15 @@ export function MegaMenu() {
                   ? "Qual é a ocasião?"
                   : "Encontre o presente certo."}
               </h2>
-              <Link className="text-link" href="/catalogo" onClick={close}>
+              <a className="text-link" href="/catalogo">
                 Ver todos os presentes <Icon name="arrow" size={16} />
-              </Link>
+              </a>
             </div>
             <div className="mega-columns">
               <section>
                 <h3>{isOccasion ? "Para celebrar" : "Nossas coleções"}</h3>
                 {(isOccasion ? occasions : categories).map((item) => (
-                  <Link
+                  <a
                     key={item}
                     href={
                       "/catalogo?" +
@@ -160,34 +171,21 @@ export function MegaMenu() {
                       "=" +
                       encodeURIComponent(item)
                     }
-                    onClick={close}
                   >
                     {item}
                     <Icon name="arrow" size={13} />
-                  </Link>
+                  </a>
                 ))}
               </section>
               <section>
                 <h3>Uma boa escolha</h3>
-                <Link href="/catalogo?faixa=ate75" onClick={close}>
-                  Presentes até R$ 75
-                </Link>
-                <Link href="/catalogo?faixa=75a150" onClick={close}>
-                  De R$ 75 a R$ 150
-                </Link>
-                <Link href="/catalogo?ofertas=1" onClick={close}>
-                  Seleção em oferta
-                </Link>
-                <Link href="/personalizados" onClick={close}>
-                  Com a sua mensagem
-                </Link>
+                <a href="/catalogo?faixa=ate75">Presentes até R$ 75</a>
+                <a href="/catalogo?faixa=75a150">De R$ 75 a R$ 150</a>
+                <a href="/catalogo?ofertas=1">Seleção em oferta</a>
+                <a href="/personalizados">Com a sua mensagem</a>
               </section>
             </div>
-            <Link
-              className="mega-feature"
-              href="/catalogo?ofertas=1"
-              onClick={close}
-            >
+            <a className="mega-feature" href="/catalogo?ofertas=1">
               <span className="mega-photo" />
               <div>
                 <span className="eyebrow">PEQUENAS SURPRESAS</span>
@@ -200,22 +198,18 @@ export function MegaMenu() {
                   Explorar ofertas <Icon name="arrow" size={15} />
                 </span>
               </div>
-            </Link>
+            </a>
           </div>
           <div className="mega-themes">
             <span>Explore por tema</span>
             {coupons.slice(1).map((c) => (
-              <Link
-                href={"/catalogo?tema=" + c.theme}
-                key={c.theme}
-                onClick={close}
-              >
+              <a href={"/catalogo?tema=" + c.theme} key={c.theme}>
                 {c.title}
-              </Link>
+              </a>
             ))}
-            <Link className="text-link" href="/presentear" onClick={close}>
+            <a className="text-link" href="/presentear">
               Precisa de uma ideia? →
-            </Link>
+            </a>
           </div>
           <div className="mega-bottom">
             <span>

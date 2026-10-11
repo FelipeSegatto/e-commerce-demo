@@ -90,9 +90,9 @@ A home apresenta 24 produtos em quatro formatos: seleção principal com oito ca
 
 ## Navegação e enquadramento
 
-A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização e cupons. Menus abrem por hover, clique, teclado ou toque; um clique fixa o painel e outro o fecha. Escape e clique fora também fecham o menu. As fotos de velas e das cestas nos banners usam enquadramento completo, com espaço ao redor.
+A navbar separa coleções e ocasiões dos atalhos de ofertas, personalização e cupons. Os textos Presentes e Por ocasião são links diretos para o catálogo e o assistente de presentes. As setas são botões separados para abrir coleções e ocasiões, por hover, clique, teclado ou toque; um clique fixa o painel e outro o fecha. As categorias da navbar e da home carregam o destino com o filtro indicado no endereço. Escape e clique fora também fecham o menu. As fotos de velas e das cestas nos banners usam enquadramento completo, com espaço ao redor.
 
-`CHROMIUM_PATH=/usr/bin/chromium npm run test:navigation` audita os destinos dos links da home, dos dois menus, do catálogo completo e de 23 páginas, verifica cliques reais nos banners e filtros por ocasião, a sequência hover seguida de clique e navegação em telas pequenas. A última execução verificou 236 URLs internas sem erros.
+`CHROMIUM_PATH=/usr/bin/chromium npm run test:navigation` audita os destinos dos links da home, dos dois menus, do catálogo completo e de 23 páginas, verifica cliques reais nos rótulos da navbar, nas quatro categorias da navbar, nas oito categorias da home, nos banners e nos filtros por ocasião, a sequência hover seguida de clique e navegação em telas pequenas. A última execução verificou 236 URLs internas sem erros.
 
 ## Banner de amizade
 

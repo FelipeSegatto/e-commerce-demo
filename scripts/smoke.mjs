@@ -55,7 +55,7 @@ import assert from "node:assert/strict";
     });
     // Browsing refinements: keyboard/hover mega menu, linked filters and demo profiles.
     const presents = page.getByRole("button", {
-      name: "Presentes",
+      name: "Abrir coleções de presentes",
       exact: false,
     });
     await presents.hover();
@@ -309,7 +309,12 @@ import assert from "node:assert/strict";
       false,
       "320px layout",
     );
-    await touch.getByRole("button", { name: "Presentes", exact: false }).tap();
+    await touch
+      .getByRole("button", {
+        name: "Abrir coleções de presentes",
+        exact: false,
+      })
+      .tap();
     await touch.locator("#gift-mega-panel").waitFor();
     await touch.getByRole("button", { name: "Fechar mega menu" }).tap();
     await touch.locator("#gift-mega-panel").waitFor({ state: "detached" });

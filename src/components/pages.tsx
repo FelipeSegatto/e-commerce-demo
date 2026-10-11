@@ -139,7 +139,7 @@ function Home({ banner }: { banner?: React.ReactNode }) {
         </div>
         <div className="category-grid">
           {categories.map((c, i) => (
-            <Link
+            <a
               className="category-card"
               key={c}
               href={"/catalogo?categoria=" + encodeURIComponent(c)}
@@ -149,7 +149,7 @@ function Home({ banner }: { banner?: React.ReactNode }) {
               </span>
               <span>{c}</span>
               <Icon name="arrow" size={16} />
-            </Link>
+            </a>
           ))}
         </div>
       </section>
